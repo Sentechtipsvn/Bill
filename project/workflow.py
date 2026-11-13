@@ -191,7 +191,7 @@ def build():
                 b.put(ref('Ledger'),'_legacyIndexDone','1','Ledger');b.set('Dirty','1')
             b.go('sync41')
 
-        from legacy_catalog import index_legacy
+        from legacy_catalog import index_legacy, MARKER as LEGACY_MARKER
         with b.route('sync41'):
             index_legacy(b)
         from synchronization import sync41
@@ -236,8 +236,12 @@ def build():
                         b.append('SortedRows',b.text(token(val(b,'createdAt','ListRecord'),'|',ref('Key'))))
             # This is the native Sort Lines recipe: Filter Files sorts TEXT values, not invoice files.
             sortedrows=b.add('filter.files',WFContentItemInputParameter=ref('SortedRows'),WFContentItemSortProperty='Name',WFContentItemSortOrder='Z to A',WFContentItemLimitEnabled=False)
+            b.set('SortedMenuRows',sortedrows)
+            # File-provider coercion must not discard a nonempty text index.
+            with b.if_(b.count(ref('SortedMenuRows')),'eq','0'):
+                b.set('SortedMenuRows',ref('SortedRows'))
             b.empty_list('Rows');b.dictionary(var='RowMap');b.set('Shown','0')
-            with b.each(sortedrows,'SortRow'):
+            with b.each(ref('SortedMenuRows'),'SortRow'):
                 match=b.match(b.text(ref('SortRow')),r'[a-f0-9]{64}\z');rid=b.text(b.first(match))
                 rr=b.parse(b.get(ref('Ledger'),rid));b.set('ListRecord',rr)
                 b.parse(b.get(ref('OrdersData'),val(b,'dataID','ListRecord')),'DisplayData')
@@ -606,7 +610,7 @@ def build():
         with b.route('tools'):
             with b.menu('Dữ liệu / công cụ',['🔄 Đọc gói Bill mới','🔄 Đọc lại tên ảnh trong kho','🛟 Xuất sổ sao lưu','📂 Nạp/khôi phục ảnh cũ','📄 Xem lịch sử hồ sơ đang chọn','🗑️ Xoá ảnh đơn đã cất','🔄 Cập nhật giao diện','↩️ Tuỳ chỉnh']):
                 b.case('🔄 Đọc gói Bill mới');b.go('sync41')
-                b.case('🔄 Đọc lại tên ảnh trong kho');b.put(ref('Ledger'),'_legacyFilenamesV411','','Ledger');b.put(ref('Ledger'),'_legacyIndexDone','','Ledger');b.go('sync')
+                b.case('🔄 Đọc lại tên ảnh trong kho');b.put(ref('Ledger'),LEGACY_MARKER,'','Ledger');b.put(ref('Ledger'),'_legacyIndexDone','','Ledger');b.go('sync')
                 b.case('🔄 Cập nhật giao diện');load_ui(b,force=True);b.alert('Đã cập nhật','');b.stop()
                 b.case('🛟 Xuất sổ sao lưu');current_time(b);file=b.save(b.text(ref('Ledger')),ref('MonthlyFolder'),b.text(token('orders_backup_',ref('ReportStamp'),'.json')));b.add('share',WFInput=file);b.go('options')
                 b.case('📂 Nạp/khôi phục ảnh cũ');b.go('legacy')

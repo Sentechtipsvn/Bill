@@ -15,7 +15,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 BUILD = ROOT / "build"
-VERSION = "4.1.1"
+VERSION = "4.1.2"
 NS = uuid.UUID("2714394b-4b0c-4b8c-953d-2578ced9d54a")
 
 
@@ -64,6 +64,7 @@ class Builder:
         self.blocks = []
         self.sections = {}
         self.loop_depth = 0
+        self.each_indices = []
         self.variable_types = {}
         self.output_types = {}
 
@@ -84,7 +85,7 @@ class Builder:
         def scope(value):
             if isinstance(value, dict):
                 if value.get("Type") == "Variable" and value.get("VariableName") == "Repeat Index" and self.loop_depth > 1:
-                    value["VariableName"] = f"Repeat Index {self.loop_depth}"
+                    value["VariableName"] = self.each_indices[-1] if self.each_indices else f"Repeat Index {self.loop_depth}"
                 for item in value.values():
                     scope(item)
             elif isinstance(value, list):
@@ -283,14 +284,27 @@ class Builder:
 
     @contextmanager
     def each(self, value, var):
-        # Use the same indexed iteration pattern as the supplied Quick Call Image.
-        # Apple's numbered Repeat Index variables are not lexical "nearest loop" aliases.
-        items_name = f"LoopItems_{len(self.actions)}"
+        # Keep native Repeat with Each responsible for the number of iterations.
+        # Use our own named counter: imported/localized Repeat Index labels must
+        # never decide which dictionary key is read. Each nested block snapshots
+        # its input and owns an independent index.
+        label = str(len(self.actions))
+        items_name = f"LoopItems_{label}"
+        index_name = f"LoopPosition_{label}"
         self.set(items_name, value)
-        count = self.count(ref(items_name))
-        with self.repeat(count):
-            self.set(var, self.item(ref(items_name), ref("Repeat Index")))
-            yield
+        self.set(index_name, "0")
+        group = uid(f"each:{label}")
+        self.add("repeat.each", WFInput=ref(items_name), GroupingIdentifier=group, WFControlFlowMode=0)
+        self.loop_depth += 1
+        self.each_indices.append(index_name)
+        self.blocks.append(("repeat.each", group))
+        self.math(ref(index_name), "+1", var=index_name)
+        self.set(var, self.item(ref(items_name), ref(index_name)))
+        yield
+        self.blocks.pop()
+        self.each_indices.pop()
+        self.loop_depth -= 1
+        self.add("repeat.each", GroupingIdentifier=group, WFControlFlowMode=2)
 
     @contextmanager
     def repeat(self, count):

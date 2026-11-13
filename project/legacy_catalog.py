@@ -4,7 +4,7 @@ from shared import DEFAULTS,field,MONEY
 
 NAME_PATTERN=r'\A(.+)\s+-\s+([0-9][0-9., \u00a0]*)(?:\s*(?:₫|đ|VND))?(?:\s*·\s*([0-9][0-9_-]{5,40}))?\s*\z'
 KEY_PATTERN=r'·\s*([0-9]{14,24}-[0-9]{6})\.png\z'
-MARKER='_legacyFilenamesV411'
+MARKER='_legacyFilenamesV412'
 
 def index_legacy(b):
  with b.if_(b.get(ref('Ledger'),MARKER),'empty'):

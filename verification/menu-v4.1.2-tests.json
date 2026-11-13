@@ -1,0 +1,15 @@
+{
+  "tests": 86,
+  "passed": true,
+  "failures": [],
+  "version": "4.1.2",
+  "originalSignedBill341GraphCompatibility": true,
+  "listContainsOrder2888": true,
+  "opensOnlySelectedInvoice": true,
+  "iPhoneExecutionTested": false,
+  "deviceRootCauseConfirmed": false,
+  "signingStatus": "verified",
+  "unsignedSHA256": "b99ed15b67c63d9b2412cdd8eb3a32343b57a54518342fa1b389f570f9518372",
+  "signedSHA256": "bd816ecc285bed078eded372f9f8c568ec4918890dbd4fe020f0826758ce1726",
+  "nativeActionsUnchangedAfterSigning": true
+}

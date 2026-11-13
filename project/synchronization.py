@@ -5,6 +5,13 @@ from shared import DEFAULTS,CODE,SHA,MONEY,field,put_object,random_id,read_data,
 def sync41(b):
  with b.route('sync41'):
   read_data(b);read_links(b)
+  # Earlier imports may have marked migration complete after visiting only
+  # part of the ledger. Reconcile headers and links once with the fixed loop.
+  # Existing receipt, fee, signature and image fields remain authoritative.
+  with b.if_(b.get(ref('Ledger'),'_iterationFixV412'),'empty'):
+   b.put(ref('Ledger'),'_sourceMigrated','','Ledger')
+   b.put(ref('Ledger'),'_sharedDataHash','','Ledger')
+   b.put(ref('Ledger'),'_iterationFixV412','1','Ledger');b.set('Dirty','1')
   with b.if_(ref('DataDiskHash'),'eq','missing'):b.set('DataDirty','1')
   with b.if_(b.get(ref('Ledger'),'_sourceMigrated'),'empty'):
    with b.each(b.keys(ref('Ledger')),'ExistingFinanceID'):

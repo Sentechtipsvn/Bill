@@ -32,6 +32,7 @@ def files_for(*records,extra=None):
         normalized={**DEFAULTS,**r,'dataID':external}
         ledger[r['id']]=json.dumps(normalized,ensure_ascii=False);links[external]=r['id']
     ledger['_sourceMap']=json.dumps(links);ledger['_legacyIndexDone']='1';ledger['_sourceMigrated']='1';ledger['_legacyFilenamesV411']='1'
+    ledger['_legacyFilenamesV412']='1';ledger['_iterationFixV412']='1'
     files[APP+'orders.json'].data=json.dumps(ledger,ensure_ascii=False)
     files[APP+'DonHang.json']=File(APP+'DonHang.json',json.dumps(data,ensure_ascii=False),NOW)
     ledger['_sharedDataHash']=hashlib.sha256(files[APP+'DonHang.json'].data.encode()).hexdigest()

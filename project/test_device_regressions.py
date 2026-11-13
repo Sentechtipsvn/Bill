@@ -73,7 +73,7 @@ class DeviceRegressions(unittest.TestCase):
   self.assertIn('TIỆM CŨ — 1.892.000₫',s.last_ui[1])
  def test_first_reindex_preserves_existing_financial_record(self):
   f=files_for(record(cash='665000',bank='1500000',signedDay='2026-11-12',fee='5000'))
-  l=json.loads(f[APP+'orders.json'].data);l.pop('_legacyFilenamesV411');f[APP+'orders.json'].data=json.dumps(l)
+  l=json.loads(f[APP+'orders.json'].data);l.pop('_legacyFilenamesV412');f[APP+'orders.json'].data=json.dumps(l)
   s=self.manager_run(f);r=saved(s)
   self.assertEqual((r['cash'],r['bank'],r['fee'],r['signedDay']),('665000','1500000','5000','2026-11-12'))
   self.assertEqual(len([k for k in ledger(s) if re.fullmatch('[a-f0-9]{64}',k)]),1)

@@ -1,0 +1,24 @@
+[
+  {
+    "file": "Bill v3.4.1.shortcut",
+    "nativeActions": 570,
+    "bytes": 70040,
+    "sha256": "c9423d50a909f5bc17789c21e108b2cedcecdf5e6d76076de9508c742ce2908b",
+    "signatureVerified": true,
+    "certificateChainSignaturesVerified": true,
+    "rootMatchesOriginal": true,
+    "nativeActionsUnchanged": true,
+    "iPhoneExecutionTested": false
+  },
+  {
+    "file": "Phiếu Giao Hàng v4.1.2.shortcut",
+    "nativeActions": 3705,
+    "bytes": 307164,
+    "sha256": "bd816ecc285bed078eded372f9f8c568ec4918890dbd4fe020f0826758ce1726",
+    "signatureVerified": true,
+    "certificateChainSignaturesVerified": true,
+    "rootMatchesOriginal": true,
+    "nativeActionsUnchanged": true,
+    "iPhoneExecutionTested": false
+  }
+]
