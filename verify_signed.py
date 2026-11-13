@@ -11,7 +11,7 @@ def chain_of(data):
  return [x509.load_der_x509_certificate(c) for c in plistlib.loads(data[12:12+size])['SigningCertificateChain']]
 reference_sha256='63343abfb89a6a03ebb57e9b3f5fa7be7c4f5c756f3017b3a8c488c3653e9179'
 results=[]
-for base,title in [('Bill-v3.4.1','Bill v3.4.1'),('Phieu-Giao-Hang-v4.1.2','Phiếu Giao Hàng v4.1.2')]:
+for base,title in [('Bill-v3.4.1','Bill v3.4.1'),('Phieu-Giao-Hang-v4.1.3','Phiếu Giao Hàng v4.1.3')]:
  original=plistlib.loads((root/'build'/f'{base}-unsigned.shortcut').read_bytes())
  file=root/'deliverables'/f'{base}.shortcut';data=file.read_bytes();chain=chain_of(data)
  assert hashlib.sha256(chain[-1].public_bytes(Encoding.DER)).hexdigest()==reference_sha256
@@ -27,4 +27,4 @@ for base,title in [('Bill-v3.4.1','Bill v3.4.1'),('Phieu-Giao-Hang-v4.1.2','Phi�
  assert original['WFWorkflowActions']==actual['WFWorkflowActions']
  target=root/'deliverables'/f'{title}.shortcut';shutil.copy2(file,target)
  results.append({'file':target.name,'nativeActions':len(actual['WFWorkflowActions']),'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest(),'signatureVerified':True,'certificateChainSignaturesVerified':True,'rootMatchesOriginal':True,'nativeActionsUnchanged':True,'iPhoneExecutionTested':False})
-(root/'verification/signatures-v4.1.2.json').write_text(json.dumps(results,ensure_ascii=False,indent=2));print(json.dumps(results,ensure_ascii=False))
+(root/'verification/signatures-v4.1.3.json').write_text(json.dumps(results,ensure_ascii=False,indent=2));print(json.dumps(results,ensure_ascii=False))

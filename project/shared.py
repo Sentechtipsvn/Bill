@@ -147,7 +147,14 @@ def read_data(b,require_migration=False):
    old=b.load(ref('AppFolder'),'orders.json')
    with b.if_(old):b.alert('Chạy Phiếu Giao Hàng v4.1 trước','Chuyển sổ cũ trước khi nhập đơn.');b.stop()
  with b.if_(source):
-  b.hash(b.text(source),'DataDiskHash');b.parse(source,'OrdersData')
+  if b.text_json_inputs:
+   b.text(source,'DataJSON')
+   b.hash(ref('DataJSON'),'DataDiskHash');b.parse(ref('DataJSON'),'OrdersData')
+   with b.if_(b.count(b.keys(ref('OrdersData'))),'eq','0'):
+    with b.if_(b.match(ref('DataJSON'),r'\A\s*\{\s*\}\s*\z'),'empty'):
+     b.alert('Đơn chưa hợp lệ','Kiểm tra DonHang.json.');b.stop()
+  else:
+   b.hash(b.text(source),'DataDiskHash');b.parse(source,'OrdersData')
 
 def save_data(b):
  fresh=b.load(ref('AppFolder'),DATA_NAME);b.set('LatestDataHash','missing')

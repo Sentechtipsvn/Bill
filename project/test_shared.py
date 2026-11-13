@@ -67,12 +67,12 @@ class SharedTests(unittest.TestCase):
   self.assertNotIn(APP+UI_NAME,s.files);self.assertFalse(s.last_ui)
  def test_cash_default_is_full_required_cash_and_ok_commits(self):
   f=files_for();a=self.manager_run(f,[ROW,'💵 Thu tiền mặt'])
-  self.assertEqual(a.asks[-1][:2],('Tiền mặt','2165000'))
+  self.assertEqual((a.asks[-1][0],text(a.asks[-1][1])),('Tiền mặt','2165000'))
   b=self.manager_run(f,[ROW,'💵 Thu tiền mặt'],['__DEFAULT__'])
   self.assertEqual(saved(b)['cash'],'2165000');self.assertEqual(saved(b)['bank'],'0')
  def test_cash_default_deducts_existing_transfer(self):
   a=self.manager_run(files_for(record(bank='1500000')),[ROW,'💵 Thu tiền mặt'],['__DEFAULT__'])
-  self.assertEqual(a.asks[-1][1],'665000');self.assertEqual(saved(a)['cash'],'665000')
+  self.assertEqual(text(a.asks[-1][1]),'665000');self.assertEqual(saved(a)['cash'],'665000')
  def test_full_cash_reopen_and_ok_never_adds_again(self):
   f=files_for(record(cash='2165000'))
   a=self.manager_run(f,[ROW,'💵 Thu tiền mặt'],['__DEFAULT__']);self.assertEqual(saved(a)['cash'],'2165000')
