@@ -11,7 +11,7 @@ def chain_of(data):
  return [x509.load_der_x509_certificate(c) for c in plistlib.loads(data[12:12+size])['SigningCertificateChain']]
 reference_sha256='63343abfb89a6a03ebb57e9b3f5fa7be7c4f5c756f3017b3a8c488c3653e9179'
 results=[]
-for base,title in [('Bill-v3.4.0','Bill v3.4.0'),('Phieu-Giao-Hang-v4.1.0','Phiếu Giao Hàng v4.1.0')]:
+for base,title in [('Bill-v3.4.1','Bill v3.4.1'),('Phieu-Giao-Hang-v4.1.1','Phiếu Giao Hàng v4.1.1')]:
  original=plistlib.loads((root/'build'/f'{base}-unsigned.shortcut').read_bytes())
  file=root/'deliverables'/f'{base}.shortcut';data=file.read_bytes();chain=chain_of(data)
  assert hashlib.sha256(chain[-1].public_bytes(Encoding.DER)).hexdigest()==reference_sha256

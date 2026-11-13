@@ -15,7 +15,11 @@ DEFAULTS.update(outcome='pending',_v41='1')
 def field(source,key):
  return ref(source,props=[{'Type':'WFDictionaryValueVariableAggrandizement','DictionaryKey':key}])
 def put_object(b,dictionary,key,value,var):
- return b.set(var,b.add('setvalueforkey',WFDictionary=dictionary,WFDictionaryKey=dyn(key),WFDictionaryValue=value))
+ # WFDictionaryValue is a text-input parameter on iOS. A bare attachment
+ # imports as an unconfigured value; a sole dictionary token preserves type.
+ typed=copy.deepcopy(value)
+ typed['Value'].setdefault('Aggrandizements',[]).append({'Type':'WFCoercionVariableAggrandizement','CoercionItemClass':'WFDictionaryContentItem'})
+ return b.set(var,b.add('setvalueforkey',WFDictionary=dictionary,WFDictionaryKey=dyn(key),WFDictionaryValue=dyn(typed)))
 def load_ui(b,force=False):
  cached=b.load(ref('AppFolder'),UI_NAME)
  b.set('UICacheFile',cached)
@@ -74,7 +78,7 @@ def ui_keys(workflow):
 def externalize(workflow):
  from ui_catalog_legacy import centralize
  visible=ui_keys(workflow)
- w=centralize(workflow)
+ w=centralize(workflow,visible_only=visible)
  prefix=w['WFWorkflowActions'][:3]
  assert prefix[1]['WFWorkflowActionIdentifier'].endswith('dictionary')
  items=prefix[1]['WFWorkflowActionParameters']['WFItems']['Value']['WFDictionaryFieldValueItems']
@@ -83,8 +87,7 @@ def externalize(workflow):
  asset={'schema':'sen-bill-ui-v1','version':'4.1.0','strings':{},'banks':json.loads(Path(__file__).with_name('banks.json').read_text())}
  if path.exists():asset=json.loads(path.read_text())
  asset['strings'].update({k:v for k,v in strings.items() if k in visible});path.write_text(json.dumps(asset,ensure_ascii=False,indent=2))
- technical={k:v for k,v in strings.items() if k not in visible}
- boot=Builder();storage(boot);load_ui(boot);boot.dictionary(technical,'Hằng số')
+ boot=Builder();storage(boot);load_ui(boot)
  mapping={a['WFWorkflowActionParameters']['UUID']:uid('bootstrap:'+str(i)) for i,a in enumerate(boot.actions)}
  def remap(x):
   if isinstance(x,dict):
@@ -94,44 +97,43 @@ def externalize(workflow):
   elif isinstance(x,list):
    for v in x:remap(v)
  remap(boot.actions)
- # Constant Text actions can be referenced directly through the cached UI
- # dictionary. This preserves the exact native dictionary-property envelope
- # already used for dynamic text, while removing redundant lookup actions.
- constants={}
- def rehome(obj):
-  if isinstance(obj,dict):
-   if obj.get('Type')=='Variable' and obj.get('VariableName')=='Nội dung giao diện':
-    props=obj.get('Aggrandizements',[])
-    if any(p.get('Type')=='WFDictionaryValueVariableAggrandizement' and p.get('DictionaryKey') in technical for p in props):obj['VariableName']='Hằng số'
-   for v in obj.values():rehome(v)
-  elif isinstance(obj,list):
-   for v in obj:rehome(v)
- rehome(w['WFWorkflowActions'][3:])
- for action in w['WFWorkflowActions'][3:]:
-  p=action['WFWorkflowActionParameters']
-  if action['WFWorkflowActionIdentifier'].endswith('getvalueforkey') and p.get('WFInput',{}).get('Value',{}).get('VariableName') in {'Nội dung giao diện','Hằng số'} and isinstance(p.get('WFDictionaryKey'),str):
-   constants[p['UUID']]=field('Hằng số' if p['WFDictionaryKey'] in technical else 'Nội dung giao diện',p['WFDictionaryKey'])['Value']
- def fold(obj):
-  if isinstance(obj,dict):
-   if obj.get('Type')=='ActionOutput' and obj.get('OutputUUID') in constants:
-    props=obj.get('Aggrandizements',[]);replacement=copy.deepcopy(constants[obj['OutputUUID']]);replacement.setdefault('Aggrandizements',[]).extend(props)
-    obj.clear();obj.update(replacement)
-   else:
-    for value in obj.values():fold(value)
-  elif isinstance(obj,list):
-   for value in obj:fold(value)
- body=[a for a in w['WFWorkflowActions'][3:] if a['WFWorkflowActionParameters']['UUID'] not in constants]
- fold(body)
- w['WFWorkflowActions']=boot.actions+body
+ # Keep reset values and route/state constants as real Text action outputs.
+ # A missing/empty dictionary property is Nothing, not an empty Text output.
+ # Expand dictionary-property macros to explicit native Get Dictionary Value
+ # actions, so iOS has an unambiguous, configured input at every use site.
+ w['WFWorkflowActions']=expand_fields(boot.actions+w['WFWorkflowActions'][3:])
  return w
 
+def expand_fields(actions):
+ result=[]
+ for action in actions:
+  pending=[];memo={}
+  def expand(obj):
+   if isinstance(obj,list):return [expand(v) for v in obj]
+   if not isinstance(obj,dict):return obj
+   props=obj.get('Aggrandizements',[])
+   if obj.get('Type') in ('Variable','ActionOutput') and any(p.get('Type')=='WFDictionaryValueVariableAggrandizement' for p in props):
+    index=next(i for i,p in enumerate(props) if p['Type']=='WFDictionaryValueVariableAggrandizement')
+    base=copy.deepcopy(obj);base['Aggrandizements']=props[:index]+[{'Type':'WFCoercionVariableAggrandizement','CoercionItemClass':'WFDictionaryContentItem'}]
+    signature=json.dumps([base,props[index]['DictionaryKey']],sort_keys=True,ensure_ascii=False)
+    if signature not in memo:
+     ident=uid('field:'+action['WFWorkflowActionParameters']['UUID']+':'+str(len(memo)))
+     pending.append({'WFWorkflowActionIdentifier':'is.workflow.actions.getvalueforkey','WFWorkflowActionParameters':{'UUID':ident,'WFInput':{'Value':base,'WFSerializationType':'WFTextTokenAttachment'},'WFGetDictionaryValueType':'Value','WFDictionaryKey':props[index]['DictionaryKey'],'CustomOutputName':props[index]['DictionaryKey']}})
+     memo[signature]={'Type':'ActionOutput','OutputUUID':ident,'OutputName':props[index]['DictionaryKey']}
+    replacement=copy.deepcopy(memo[signature])
+    if props[index+1:]:replacement['Aggrandizements']=props[index+1:]
+    return expand(replacement)
+   return {k:expand(v) for k,v in obj.items()}
+  expanded=expand(action);result.extend(pending);result.append(expanded)
+ return result
+
 def random_id(b, data, variable):
- b.set(variable,'')
+ b.set(variable,'0')
  with b.repeat(8):
-  with b.if_(ref(variable),'empty'):
+  with b.if_(ref(variable),'eq','0'):
    candidate=b.text(b.add('number.random',WFRandomNumberMinimum=1000,WFRandomNumberMaximum=9999))
    with b.if_(b.get(data,candidate),'empty'):b.set(variable,candidate)
- with b.if_(ref(variable),'empty'):
+ with b.if_(ref(variable),'eq','0'):
   b.alert('Chưa cấp được ID','Không ghi đè đơn cũ.');b.stop()
  return ref(variable)
 

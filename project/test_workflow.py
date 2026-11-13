@@ -31,7 +31,7 @@ def files_for(*records,extra=None):
         data[external]=dict(Name=r['name'],Money=r['total'],ID=external,DC=r.get('address',''),Number=r.get('phone',''))
         normalized={**DEFAULTS,**r,'dataID':external}
         ledger[r['id']]=json.dumps(normalized,ensure_ascii=False);links[external]=r['id']
-    ledger['_sourceMap']=json.dumps(links);ledger['_legacyIndexDone']='1';ledger['_sourceMigrated']='1'
+    ledger['_sourceMap']=json.dumps(links);ledger['_legacyIndexDone']='1';ledger['_sourceMigrated']='1';ledger['_legacyFilenamesV411']='1'
     files[APP+'orders.json'].data=json.dumps(ledger,ensure_ascii=False)
     files[APP+'DonHang.json']=File(APP+'DonHang.json',json.dumps(data,ensure_ascii=False),NOW)
     ledger['_sharedDataHash']=hashlib.sha256(files[APP+'DonHang.json'].data.encode()).hexdigest()

@@ -35,15 +35,18 @@ def save_to(b,after):
     b.set('SaveReturn',after); b.go('save')
 
 def number_input(b, prompt, default, variable, maximum='1000000000000'):
-    b.set(variable,'')
+    # The default may refer to the output variable itself (display limit/fee).
+    # Snapshot it before asking; never gate an Ask on a cleared dictionary value.
+    suffix=str(len(b.actions));accepted='NumberAccepted_'+suffix
+    frozen='NumberDefault_'+suffix;b.set(frozen,default);b.set(accepted,'0')
     with b.repeat(3):
-        with b.if_(ref(variable),'empty'):
-            answer=b.ask(prompt,default,'Number')
+        with b.if_(ref(accepted),'eq','0'):
+            answer=b.ask(prompt,ref(frozen),'Number')
             with b.if_(b.match(answer,MONEY)):
-                with b.if_(answer,'le',maximum): b.set(variable,answer)
+                with b.if_(answer,'le',maximum): b.set(variable,answer);b.set(accepted,'1')
                 with b.if_(answer,'gt',maximum): b.alert('Vượt số tiền còn được ghi','Chưa thay đổi sổ. Sếp nhập lại số tiền thực tế.')
             with b.if_(b.match(answer,MONEY),'empty'): b.alert('Số tiền chưa hợp lệ','Nhập số nguyên VND, không chấm/phẩy, không âm.')
-    with b.if_(ref(variable),'empty'): b.stop()
+    with b.if_(ref(accepted),'eq','0'): b.stop()
     return ref(variable)
 
 def load_invoice(b):
@@ -188,6 +191,9 @@ def build():
                 b.put(ref('Ledger'),'_legacyIndexDone','1','Ledger');b.set('Dirty','1')
             b.go('sync41')
 
+        from legacy_catalog import index_legacy
+        with b.route('sync41'):
+            index_legacy(b)
         from synchronization import sync41
         sync41(b)
 
@@ -598,8 +604,9 @@ def build():
                 b.case(BACK);b.go('main')
 
         with b.route('tools'):
-            with b.menu('Dữ liệu / công cụ',['🔄 Đọc gói Bill mới','🛟 Xuất sổ sao lưu','📂 Nạp/khôi phục ảnh cũ','📄 Xem lịch sử hồ sơ đang chọn','🗑️ Xoá ảnh đơn đã cất','🔄 Cập nhật giao diện','↩️ Tuỳ chỉnh']):
+            with b.menu('Dữ liệu / công cụ',['🔄 Đọc gói Bill mới','🔄 Đọc lại tên ảnh trong kho','🛟 Xuất sổ sao lưu','📂 Nạp/khôi phục ảnh cũ','📄 Xem lịch sử hồ sơ đang chọn','🗑️ Xoá ảnh đơn đã cất','🔄 Cập nhật giao diện','↩️ Tuỳ chỉnh']):
                 b.case('🔄 Đọc gói Bill mới');b.go('sync41')
+                b.case('🔄 Đọc lại tên ảnh trong kho');b.put(ref('Ledger'),'_legacyFilenamesV411','','Ledger');b.put(ref('Ledger'),'_legacyIndexDone','','Ledger');b.go('sync')
                 b.case('🔄 Cập nhật giao diện');load_ui(b,force=True);b.alert('Đã cập nhật','');b.stop()
                 b.case('🛟 Xuất sổ sao lưu');current_time(b);file=b.save(b.text(ref('Ledger')),ref('MonthlyFolder'),b.text(token('orders_backup_',ref('ReportStamp'),'.json')));b.add('share',WFInput=file);b.go('options')
                 b.case('📂 Nạp/khôi phục ảnh cũ');b.go('legacy')
@@ -630,7 +637,9 @@ def build():
                 b.set('SelectedID',ref('LegacyID'));b.go('order')
             with b.if_(b.get(ref('Ledger'),ref('LegacyID')),'empty'):
                 b.set('LegacyParsedName','');b.set('LegacyParsedTotal','0')
-                parts=b.match(filename,r'\A(.+?)\s+-\s+([0-9][0-9., ]*)\s*·')
+                from legacy_catalog import NAME_PATTERN
+                base=b.replace(filename,r'(?i)\.(?:png|jpe?g|heic|heif|webp)\z','')
+                parts=b.match(base,NAME_PATTERN)
                 with b.if_(parts):
                     b.set('LegacyParsedName',b.add('text.match.getgroup',matches=b.first(parts),WFGetGroupType='Group At Index',WFGroupIndex=1))
                     raw=b.add('text.match.getgroup',matches=b.first(parts),WFGetGroupType='Group At Index',WFGroupIndex=2)
@@ -707,7 +716,7 @@ def build():
     from shared import externalize
     workflow=externalize(workflow)
     BUILD.mkdir(parents=True,exist_ok=True)
-    (BUILD/'Phieu-Giao-Hang-v4.1.0-unsigned.shortcut').write_bytes(plistlib.dumps(workflow,fmt=plistlib.FMT_BINARY,sort_keys=False))
+    (BUILD/f'Phieu-Giao-Hang-v{VERSION}-unsigned.shortcut').write_bytes(plistlib.dumps(workflow,fmt=plistlib.FMT_BINARY,sort_keys=False))
     (BUILD/'workflow.json').write_text(json.dumps(workflow,ensure_ascii=False,indent=2))
     return workflow
 

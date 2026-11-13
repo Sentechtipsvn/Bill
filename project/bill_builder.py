@@ -3,7 +3,7 @@ import copy,json,plistlib
 from pathlib import Path
 from shortcut_builder import Builder,BUILD,ref,token,uid,output,current_time
 from shared import CODE,MONEY,DATA_NAME,field,put_object,read_data,save_data,random_id,externalize
-VERSION='3.4.0'
+VERSION='3.4.1'
 CODE_PATTERN=CODE
 SAVE='💾 Lưu đơn'
 EDIT_NAME='✏️ Sửa tên khách'
@@ -60,7 +60,7 @@ def read_total(b, default=""):
 def build_bill():
  b=Builder();b.actions=copy.deepcopy(json.loads(Path(__file__).with_name('bill_ocr_actions.json').read_text()))
  for i,a in enumerate(b.actions):a['WFWorkflowActionParameters'].setdefault('UUID',uid(f'bill-ocr:{i}'))
- b.actions[0]['WFWorkflowActionParameters']['WFCommentActionText']='Bill 3.4.0 · © Sentechtipsvn'
+ b.actions[0]['WFWorkflowActionParameters']['WFCommentActionText']=f'Bill {VERSION} · © Sentechtipsvn'
  header_fields(b);b.set('BillName','');b.set('BillTotal','')
  with b.if_(ref('Đã có tên khách'),'eq','1'):b.set('BillName',ref('Tên khách đã chọn'))
  with b.if_(ref('Đã có tiền tổng'),'eq','1'):b.set('BillTotal',ref('Tiền tổng đã chọn'))
@@ -75,7 +75,9 @@ def build_bill():
   with b.menu(token('Bill · ',ref('BillName'),' — ',b.money(ref('BillTotal')),'₫'),[SAVE,EDIT_NAME,EDIT_TOTAL,EDIT_CODE,EDIT_ADDRESS,EDIT_PHONE,'👁️ Xem ảnh','Huỷ']):
    b.case(SAVE);current_time(b);read_data(b,require_migration=True)
    b.set('BillPNG',b.add('image.convert',WFInput=ref('Hình ảnh'),WFImageFormat='PNG',WFImagePreserveMetadata=False))
-   b.set('BillID',ref('BillCode'));existing=b.get(ref('OrdersData'),ref('BillID'));b.set('IsDuplicate','0')
+   b.set('BillID',ref('BillCode'))
+   with b.if_(b.match(ref('BillID'),CODE),'empty'):random_id(b,ref('OrdersData'),'BillID')
+   existing=b.get(ref('OrdersData'),ref('BillID'));b.set('IsDuplicate','0')
    with b.if_(existing):
     b.load(ref('ImagesFolder'),b.text(token(ref('BillID'),'.png')),'PreviousImage')
     with b.if_(ref('PreviousImage'),'empty'):
@@ -97,7 +99,8 @@ def build_bill():
    filename=b.text(token(ref('BillID'),'.png'))
    present=b.load(ref('ImagesFolder'),filename)
    with b.if_(present):
-    with b.if_(ref('IsDuplicate'),'eq','0'):random_id(b,ref('OrdersData'),'BillID')
+    with b.if_(ref('IsDuplicate'),'eq','0'):
+     with b.if_(b.hash(ref('BillPNG')),'ne',b.hash(present)):random_id(b,ref('OrdersData'),'BillID')
    # Check orphan/collision paths even after choosing another metadata ID.
    b.set('PhotoReady','0')
    with b.repeat(8):
@@ -106,7 +109,9 @@ def build_bill():
      with b.if_(present,'empty'):b.set('PhotoReady','1')
      with b.if_(present):
       with b.if_(ref('IsDuplicate'),'eq','1'):b.set('PhotoReady','1')
-      with b.if_(ref('IsDuplicate'),'eq','0'):random_id(b,ref('OrdersData'),'BillID')
+      with b.if_(ref('IsDuplicate'),'eq','0'):
+       with b.if_(b.hash(ref('BillPNG')),'eq',b.hash(present)):b.set('PhotoReady','1')
+       with b.if_(b.hash(ref('BillPNG')),'ne',b.hash(present)):random_id(b,ref('OrdersData'),'BillID')
    with b.if_(ref('PhotoReady'),'eq','0'):b.alert('Chưa cấp được ID','Không ghi đè ảnh cũ.');b.stop()
    b.text(token(ref('BillID'),'.png'),'BillFilename')
    existing_photo=b.load(ref('ImagesFolder'),ref('BillFilename'))
@@ -129,7 +134,7 @@ def build_bill():
   'WFWorkflowInputContentItemClasses':['WFImageContentItem'],'WFWorkflowOutputContentItemClasses':[],
   'WFWorkflowTypes':['ActionExtension'],'WFQuickActionSurfaces':[],'WFWorkflowHasShortcutInputVariables':True,'WFWorkflowHasOutputFallback':False,'WFWorkflowImportQuestions':[]}
  workflow=externalize(workflow);BUILD.mkdir(exist_ok=True)
- (BUILD/'Bill-v3.4.0-unsigned.shortcut').write_bytes(plistlib.dumps(workflow,fmt=plistlib.FMT_BINARY,sort_keys=False))
+ (BUILD/f'Bill-v{VERSION}-unsigned.shortcut').write_bytes(plistlib.dumps(workflow,fmt=plistlib.FMT_BINARY,sort_keys=False))
  (BUILD/'bill-workflow.json').write_text(json.dumps(workflow,ensure_ascii=False,indent=2));return workflow
 
 if __name__=='__main__':print('Built Bill:',len(build_bill()['WFWorkflowActions']),'native actions')

@@ -1,0 +1,12 @@
+{
+  "tests": 81,
+  "passed": true,
+  "failures": [],
+  "iPhoneExecutionTested": false,
+  "versions": {
+    "Bill": "3.4.1",
+    "PhieuGiaoHang": "4.1.1"
+  },
+  "nativeEnvelopeRegression": "WFDictionaryValue uses text-input state; raw attachment is rejected",
+  "legacyMigration": "filename metadata only, one-time index; existing financial records preserved"
+}

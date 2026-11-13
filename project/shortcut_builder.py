@@ -15,7 +15,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 BUILD = ROOT / "build"
-VERSION = "4.1.0"
+VERSION = "4.1.1"
 NS = uuid.UUID("2714394b-4b0c-4b8c-953d-2578ced9d54a")
 
 

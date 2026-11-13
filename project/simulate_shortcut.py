@@ -167,6 +167,8 @@ class Simulator:
                         result = text(result)
                     elif target == 'WFNumberContentItem':
                         result = float(text(result))
+                    elif target == 'WFDictionaryContentItem' and not isinstance(result,dict):
+                        result = json.loads(text(result))
                 elif prop['Type'] == 'WFDictionaryValueVariableAggrandizement':
                     result = result.get(prop['DictionaryKey'], '')
                 elif prop['Type'] == 'WFPropertyVariableAggrandizement':
@@ -302,7 +304,15 @@ class Simulator:
             return list(d) if t == 'All Keys' else list(d.values()) if t == 'All Values' else d.get(text(get('WFDictionaryKey')), '')
         if ident == 'setvalueforkey':
             d = copy.deepcopy(get('WFDictionary'))
-            d[text(get('WFDictionaryKey'))] = get('WFDictionaryValue')
+            key=text(get('WFDictionaryKey'));assert key, 'Set Dictionary Value has an empty key'
+            value=p.get('WFDictionaryValue')
+            assert isinstance(value,str) or value.get('WFSerializationType')=='WFTextTokenString', 'WFDictionaryValue requires a text-input state on iOS'
+            state=value.get('Value',{}) if isinstance(value,dict) else {}
+            attachments=state.get('attachmentsByRange',{})
+            if state.get('string')=='\ufffc' and len(attachments)==1 and any(prop.get('CoercionItemClass')=='WFDictionaryContentItem' for prop in attachments.get('{0, 1}',{}).get('Aggrandizements',[])):
+                resolved=self.resolve({'Value':attachments['{0, 1}'],'WFSerializationType':'WFTextTokenAttachment'})
+            else:resolved=get('WFDictionaryValue')
+            d[key] = resolved
             return d
         if ident == 'detect.dictionary':
             return json.loads(text(get('WFInput')))
@@ -532,6 +542,11 @@ def validate(workflow):
             for v in x:
                 walk(v)
     for a in actions:
+        p=a['WFWorkflowActionParameters']
+        if a['WFWorkflowActionIdentifier']=='is.workflow.actions.setvalueforkey':
+            for key in ('WFDictionaryKey','WFDictionaryValue'):
+                value=p.get(key)
+                assert isinstance(value,str) or isinstance(value,dict) and value.get('WFSerializationType')=='WFTextTokenString', (key,'must use an iOS text-input state')
         walk(a['WFWorkflowActionParameters'])
         seen.add(a['WFWorkflowActionParameters']['UUID'])
     graph(actions)

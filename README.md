@@ -1,12 +1,19 @@
 # Bill & Phiếu Giao Hàng · © Sentechtipsvn
 
-Bill **3.4.0** và Phiếu Giao Hàng **4.1.0** dùng chung giao diện JSON, sổ đơn và ảnh trong iCloud.
+Bill **3.4.1** và Phiếu Giao Hàng **4.1.1** sửa các lỗi iPhone báo ở bản 3.4.0 / 4.1.0, dùng chung giao diện JSON, sổ đơn và ảnh trong iCloud.
+
+## Bản sửa 13/11/2026
+
+- Bill: sửa giá trị của Set Dictionary Value bị iOS hiển thị thành ô trống; kiểm tra ID trước khi ghi; khôi phục metadata khi ảnh cùng ID đã lưu từ lần lỗi trước.
+- Cả hai: giữ giá trị khởi tạo rỗng và hằng số luồng bằng Text native; lấy trường từ điển bằng tác vụ Get Dictionary Value có đầu vào rõ ràng, bỏ bước gộp biến cũ.
+- Phiếu Giao Hàng: Giới hạn hiển thị luôn mở ô nhập, giữ số đã đặt làm mặc định; nhận 0–500 và lưu qua lần chạy sau.
+- Kho cũ: tự đọc tên các ảnh trong thư mục dùng chung một lần, bóc tên/tiền mà không đọc dữ liệu ảnh. Giữ nguyên các hồ sơ tài chính đã có, không suy ngày ký hoặc tự tính công cho ảnh cũ. Nếu thêm ảnh cũ sau đó: Tuỳ chỉnh → Dữ liệu / công cụ → Đọc lại tên ảnh trong kho.
 
 ## Cài và chuyển dữ liệu
 
-1. Cài cả hai bản mới. Chạy **Phiếu Giao Hàng v4.1.0 trước một lần** để chuyển sổ cũ; lần đầu cần mạng để tải giao diện.
-2. Chia sẻ ảnh vào **Bill v3.4.0**, kiểm tra tên/tiền rồi lưu.
-3. Chạy **Phiếu Giao Hàng v4.1.0** để chọn đơn. Nếu dùng Trung tâm điều khiển, đổi ô cũ đang trỏ v4.0 sang bản v4.1.
+1. Cài cả hai bản mới. Chạy **Phiếu Giao Hàng v4.1.1 trước một lần** để nhận lại kho cũ; lần đầu cần mạng nếu chưa có bản giao diện đã lưu.
+2. Chia sẻ ảnh vào **Bill v3.4.1**, kiểm tra tên/tiền rồi lưu. Đơn đã gặp lỗi ở 3.4.0 cần chia sẻ lại ảnh vào bản này để hoàn tất sổ.
+3. Chạy **Phiếu Giao Hàng v4.1.1** để chọn đơn. Đổi ô Trung tâm điều khiển sang phím tắt mới nếu đang dùng ô trỏ bản cũ.
 
 Dữ liệu vẫn ở `iCloud Drive/Shortcuts/SenTechTips_AnhDonHang`. Không cần tạo lại thư mục hoặc di chuyển ảnh cũ. Khoản thu, công và lịch sử cũ được giữ; ảnh cũ tiếp tục đọc theo đường dẫn đã lưu.
 
@@ -38,7 +45,7 @@ Sổ tài chính `orders.json` giữ schema `sen-orders-v3` và các khoản thu
 - Chỉ lấy ảnh của đơn được chọn. Sau khi chuyển sổ cũ, không liệt kê lại thư mục ảnh hoặc thư mục metadata cũ khi mở.
 - Các hằng số xử lý, đường dẫn và mã luồng vẫn nằm trong phím tắt; sửa chữ trong JSON không làm đổi các mã xử lý này. Nhãn nhánh menu native là các nhãn điều hướng cố định.
 
-Bộ mô phỏng cùng 150 đơn cho thấy số tác vụ thực thi giảm **25%** so với bản 4.0.0; không đọc ảnh, không kê thư mục và không gọi mạng ở lần mở sau. Đây là đếm tác vụ trên mô hình native, **không phải đo thời gian trên iPhone 11**.
+Lần chuyển kho đầu tiên chỉ liệt kê tên tệp và thông tin ngày tạo. Các lần mở sau đọc JSON, không liệt kê lại thư mục ảnh. Chưa đo thời gian bản sửa trên iPhone 11.
 
 ## Thu tiền và QR
 
@@ -54,7 +61,7 @@ Công mặc định 5.000₫ tính theo ngày Sếp xác nhận ký nhận việ
 
 Báo cáo vẫn có phiếu nội bộ, chứng từ CK/ảnh giấy khách ký theo loại; chỉ chia sẻ khi Sếp chọn và chỉ đánh dấu đã gửi sau xác nhận. Sổ có bản chờ, bản sao lưu và kiểm tra hash trước khi ghi. Không chạy nhiều phiên cùng lúc.
 
-Bill 3.4.0 và Phiếu Giao Hàng 4.1.0 là một cặp cập nhật. **Sweep 0.2.1 chưa có bộ nhập định dạng DonHang.json mới**; dự án này chưa thay đổi ứng dụng Sweep.
+Bill 3.4.1 và Phiếu Giao Hàng 4.1.1 là một cặp cập nhật. **Sweep 0.2.1 chưa có bộ nhập định dạng DonHang.json mới**; dự án này chưa thay đổi ứng dụng Sweep.
 
 ## Phát triển và kiểm tra
 
@@ -65,6 +72,6 @@ python check.py
 
 `project/bill_builder.py` giữ luồng OCR đã đối chiếu từ Bill 3.3.0, thêm `SĐT:` và sổ năm trường. `project/workflow.py` dựng Phiếu Giao Hàng; `shared.py` chứa cache/JSON và compiler giao diện; `synchronization.py` chuyển sổ cũ. Tệp build sinh ở `build/`.
 
-Đã đạt **70 kiểm tra** chạy trực tiếp action graph; đã lấy QR mẫu công khai thật của VietQR, dựng ảnh và giải mã xác nhận ngân hàng, tài khoản, số tiền/nội dung và CRC16. Cả nhánh thiết lập QR gốc cũng được đối chiếu. Chưa chạy các bản mới trên iPhone thật; Sếp cần thử một đơn mẫu và QR trên thiết bị.
+Đã đạt **81 kiểm tra trên máy chủ**, gồm kiểm tra envelope native độc lập và các ca tái hiện lỗi Sếp báo: lưu đơn, giá trị mặc định/giới hạn, kho ảnh cũ không có sổ, giữ khoản thu và công, mở đúng một ảnh, hoàn tất ảnh còn lại sau lần lưu lỗi. Bộ mô phỏng trước đã bỏ sót lỗi cấu trúc native; kiểm tra mô phỏng không thay thế chạy thật trên iOS. Chữ ký và việc giữ nguyên action graph sau ký được kiểm tra riêng. Chưa chạy bản sửa trên iPhone thật.
 
 Thư mục `verification/` chứa kết quả kiểm tra, dùng tài khoản ví dụ công khai của VietQR, không dùng tài khoản khách hoặc tài khoản của Sếp.

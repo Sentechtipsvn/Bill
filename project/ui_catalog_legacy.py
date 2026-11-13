@@ -13,7 +13,7 @@ from shortcut_builder import Builder, ref, token, uid
 CATALOG_NAME = 'Nội dung giao diện'
 
 
-def centralize(workflow):
+def centralize(workflow, visible_only=None):
     workflow = copy.deepcopy(workflow)
     strings = {'Trống': ''}
     reverse = {'': 'Trống'}
@@ -30,9 +30,12 @@ def centralize(workflow):
         return ref(CATALOG_NAME, props=[{'Type': 'WFDictionaryValueVariableAggrandizement',
                                         'DictionaryKey': key_for(text)}])
 
+    def catalogued(text):
+        return visible_only is None or key_for(text) in visible_only
+
     def localized(value):
         if isinstance(value, str):
-            return token(lookup(value))
+            return token(lookup(value)) if catalogued(value) else value
         if not isinstance(value, dict) or value.get('WFSerializationType') != 'WFTextTokenString':
             return value
         state = value['Value']
@@ -42,12 +45,12 @@ def centralize(workflow):
             start, length = map(int, loc.strip('{}').split(','))
             literal = raw[offset:start*2].decode('utf-16-le')
             if literal:
-                parts.append(lookup(literal))
+                parts.append(lookup(literal) if catalogued(literal) else literal)
             parts.append({'Value': copy.deepcopy(attachment), 'WFSerializationType': 'WFTextTokenAttachment'})
             offset = (start+length)*2
         tail = raw[offset:].decode('utf-16-le')
         if tail or not parts:
-            parts.append(lookup(tail))
+            parts.append(lookup(tail) if catalogued(tail) else tail)
         return token(*parts)
 
     ui_fields = {'WFAlertActionTitle', 'WFAlertActionMessage', 'WFAskActionPrompt',
@@ -57,12 +60,12 @@ def centralize(workflow):
         params = action['WFWorkflowActionParameters']
         if action['WFWorkflowActionIdentifier'] == 'is.workflow.actions.gettext':
             value = params.get('WFTextActionText', '')
-            if isinstance(value, str):
+            if isinstance(value, str) and catalogued(value):
                 action['WFWorkflowActionIdentifier'] = 'is.workflow.actions.getvalueforkey'
                 params.pop('WFTextActionText', None)
                 params.update(WFInput=ref(CATALOG_NAME), WFGetDictionaryValueType='Value',
                               WFDictionaryKey=key_for(value))
-            else:
+            elif not isinstance(value, str):
                 params['WFTextActionText'] = localized(value)
         for key in ui_fields & params.keys():
             params[key] = localized(params[key])
