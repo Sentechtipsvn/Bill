@@ -1,0 +1,1324 @@
+[
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.comment",
+    "WFWorkflowActionParameters": {
+      "WFCommentActionText": "Bill v2 — Chia sẻ ảnh hóa đơn vào Bill để đọc tên khách và tổng tiền. Nếu thiếu trường, Bill hỏi đúng trường đó. Lưu ảnh PNG vào Ảnh Đơn Hàng, đặt tên theo khách, số tiền và thời điểm lưu.",
+      "UUID": "8DA7656B-20DA-4215-9531-61BB5E10867B"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.detect.images",
+    "WFWorkflowActionParameters": {
+      "WFInput": {
+        "Value": {
+          "Type": "ExtensionInput"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      },
+      "UUID": "D80C1E09-CE66-43A5-BAFF-4382324FAAE1"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.count",
+    "WFWorkflowActionParameters": {
+      "WFCountType": "Items",
+      "Input": {
+        "Value": {
+          "OutputUUID": "D80C1E09-CE66-43A5-BAFF-4382324FAAE1",
+          "Type": "ActionOutput",
+          "OutputName": "Hình ảnh"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      },
+      "UUID": "2DC2BB6F-9B16-5A57-8F49-B4C1BECA981C"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+    "WFWorkflowActionParameters": {
+      "GroupingIdentifier": "481AB099-4363-56E5-820A-425DA0C6254A",
+      "WFInput": {
+        "Type": "Variable",
+        "Variable": {
+          "Value": {
+            "Type": "ActionOutput",
+            "OutputName": "Đếm",
+            "OutputUUID": "2DC2BB6F-9B16-5A57-8F49-B4C1BECA981C",
+            "Aggrandizements": [
+              {
+                "Type": "WFCoercionVariableAggrandizement",
+                "CoercionItemClass": "WFNumberContentItem"
+              }
+            ]
+          },
+          "WFSerializationType": "WFTextTokenAttachment"
+        }
+      },
+      "WFControlFlowMode": 0,
+      "WFNumberValue": "0",
+      "WFCondition": 4
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.alert",
+    "WFWorkflowActionParameters": {
+      "WFAlertActionCancelButtonShown": false,
+      "WFAlertActionTitle": "Bill — Chưa có ảnh",
+      "UUID": "1060D40D-90C5-5705-AA18-606929980B61",
+      "WFAlertActionMessage": "Mở ảnh đơn, bấm Chia sẻ rồi chọn Bill v2."
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.exit",
+    "WFWorkflowActionParameters": {
+      "UUID": "59DF742D-D04A-5676-860E-E94B217229AA"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+    "WFWorkflowActionParameters": {
+      "GroupingIdentifier": "481AB099-4363-56E5-820A-425DA0C6254A",
+      "WFControlFlowMode": 2
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+    "WFWorkflowActionParameters": {
+      "GroupingIdentifier": "89FCE902-F5DD-5C1B-9BD6-1E7A6D36D6B3",
+      "WFInput": {
+        "Type": "Variable",
+        "Variable": {
+          "Value": {
+            "Type": "ActionOutput",
+            "OutputName": "Đếm",
+            "OutputUUID": "2DC2BB6F-9B16-5A57-8F49-B4C1BECA981C",
+            "Aggrandizements": [
+              {
+                "Type": "WFCoercionVariableAggrandizement",
+                "CoercionItemClass": "WFNumberContentItem"
+              }
+            ]
+          },
+          "WFSerializationType": "WFTextTokenAttachment"
+        }
+      },
+      "WFControlFlowMode": 0,
+      "WFNumberValue": "1",
+      "WFCondition": 2
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.choosefromlist",
+    "WFWorkflowActionParameters": {
+      "WFInput": {
+        "Value": {
+          "OutputUUID": "D80C1E09-CE66-43A5-BAFF-4382324FAAE1",
+          "Type": "ActionOutput",
+          "OutputName": "Hình ảnh"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      },
+      "UUID": "3DE40274-88BC-52C5-863D-501A8C176559",
+      "WFChooseFromListActionPrompt": "Chọn một ảnh đơn cần lưu",
+      "WFChooseFromListActionSelectMultiple": false
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+    "WFWorkflowActionParameters": {
+      "WFInput": {
+        "Type": "Variable",
+        "Variable": {
+          "Value": {
+            "OutputUUID": "3DE40274-88BC-52C5-863D-501A8C176559",
+            "Type": "ActionOutput",
+            "OutputName": "Mục đã chọn"
+          },
+          "WFSerializationType": "WFTextTokenAttachment"
+        }
+      },
+      "WFControlFlowMode": 0,
+      "GroupingIdentifier": "E829FF65-AD01-53CA-873F-CCDEEF73E017",
+      "WFCondition": 100
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.setvariable",
+    "WFWorkflowActionParameters": {
+      "WFInput": {
+        "Value": {
+          "OutputUUID": "3DE40274-88BC-52C5-863D-501A8C176559",
+          "Type": "ActionOutput",
+          "OutputName": "Mục đã chọn"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      },
+      "WFVariableName": "Hình ảnh",
+      "UUID": "590203EB-8D64-5915-A452-B002A438C221"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+    "WFWorkflowActionParameters": {
+      "GroupingIdentifier": "E829FF65-AD01-53CA-873F-CCDEEF73E017",
+      "WFControlFlowMode": 1
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.exit",
+    "WFWorkflowActionParameters": {
+      "UUID": "D6E6DEF2-291C-570D-B1EC-3F790C580558"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+    "WFWorkflowActionParameters": {
+      "GroupingIdentifier": "E829FF65-AD01-53CA-873F-CCDEEF73E017",
+      "WFControlFlowMode": 2
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+    "WFWorkflowActionParameters": {
+      "GroupingIdentifier": "89FCE902-F5DD-5C1B-9BD6-1E7A6D36D6B3",
+      "WFControlFlowMode": 1
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.setvariable",
+    "WFWorkflowActionParameters": {
+      "WFInput": {
+        "Value": {
+          "OutputUUID": "D80C1E09-CE66-43A5-BAFF-4382324FAAE1",
+          "Type": "ActionOutput",
+          "OutputName": "Hình ảnh"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      },
+      "WFVariableName": "Hình ảnh"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+    "WFWorkflowActionParameters": {
+      "GroupingIdentifier": "89FCE902-F5DD-5C1B-9BD6-1E7A6D36D6B3",
+      "WFControlFlowMode": 2
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.number",
+    "WFWorkflowActionParameters": {
+      "UUID": "C97A0A3F-C297-4270-ADCF-6948E16BFCCD",
+      "CustomOutputName": "Chưa xác định dữ liệu = 0",
+      "WFNumberActionNumber": 0
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.setvariable",
+    "WFWorkflowActionParameters": {
+      "WFInput": {
+        "Value": {
+          "OutputUUID": "C97A0A3F-C297-4270-ADCF-6948E16BFCCD",
+          "Type": "ActionOutput",
+          "OutputName": "Chưa xác định dữ liệu = 0"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      },
+      "WFVariableName": "Đã có tên khách",
+      "UUID": "295C997C-4129-49D4-88A8-0D8718565767"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.setvariable",
+    "WFWorkflowActionParameters": {
+      "WFInput": {
+        "Value": {
+          "OutputUUID": "C97A0A3F-C297-4270-ADCF-6948E16BFCCD",
+          "Type": "ActionOutput",
+          "OutputName": "Chưa xác định dữ liệu = 0"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      },
+      "WFVariableName": "Đã có tiền tổng",
+      "UUID": "FBCC4E91-2880-4564-B91A-F3CE52A3ACF0"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.extracttextfromimage",
+    "WFWorkflowActionParameters": {
+      "WFImage": {
+        "Value": {
+          "VariableName": "Hình ảnh",
+          "Type": "Variable"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      },
+      "CustomOutputName": "Văn bản hóa đơn",
+      "UUID": "A3147F75-3BE8-40D4-8D63-641A5697EA00"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.count",
+    "WFWorkflowActionParameters": {
+      "UUID": "E3A7FA00-9D0A-421D-94E1-5C35D375FA40",
+      "CustomOutputName": "Số ký tự OCR",
+      "WFCountType": "Characters",
+      "Input": {
+        "Value": {
+          "OutputUUID": "A3147F75-3BE8-40D4-8D63-641A5697EA00",
+          "Type": "ActionOutput",
+          "OutputName": "Văn bản hóa đơn"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+    "WFWorkflowActionParameters": {
+      "WFCondition": 2,
+      "WFInput": {
+        "Type": "Variable",
+        "Variable": {
+          "Value": {
+            "Type": "ActionOutput",
+            "OutputName": "Số ký tự OCR",
+            "OutputUUID": "E3A7FA00-9D0A-421D-94E1-5C35D375FA40",
+            "Aggrandizements": [
+              {
+                "Type": "WFCoercionVariableAggrandizement",
+                "CoercionItemClass": "WFNumberContentItem"
+              }
+            ]
+          },
+          "WFSerializationType": "WFTextTokenAttachment"
+        }
+      },
+      "WFControlFlowMode": 0,
+      "UUID": "E55FF31A-548A-4608-8D88-057B23AE7943",
+      "GroupingIdentifier": "7F388BAB-A53D-46AA-B019-7B3732BA777E",
+      "WFNumberValue": "0"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.text.replace",
+    "WFWorkflowActionParameters": {
+      "WFReplaceTextReplace": "\n",
+      "WFReplaceTextRegularExpression": true,
+      "WFReplaceTextFind": "\\r\\n?|[\\u2028\\u2029]",
+      "WFReplaceTextCaseSensitive": true,
+      "UUID": "3553994C-48B2-4335-985A-117D1A503114",
+      "WFInput": {
+        "Value": {
+          "string": "￼",
+          "attachmentsByRange": {
+            "{0, 1}": {
+              "OutputUUID": "A3147F75-3BE8-40D4-8D63-641A5697EA00",
+              "Type": "ActionOutput",
+              "OutputName": "Văn bản hóa đơn"
+            }
+          }
+        },
+        "WFSerializationType": "WFTextTokenString"
+      },
+      "CustomOutputName": "Chuẩn hóa xuống dòng"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.text.replace",
+    "WFWorkflowActionParameters": {
+      "WFReplaceTextReplace": " ",
+      "WFReplaceTextRegularExpression": true,
+      "WFReplaceTextFind": "[\\u00a0\\u1680\\u2000-\\u200a\\u202f\\u205f\\u3000]",
+      "WFReplaceTextCaseSensitive": true,
+      "UUID": "BD32D7B2-52FC-440A-86A7-F8F5BA7E601B",
+      "WFInput": {
+        "Value": {
+          "string": "￼",
+          "attachmentsByRange": {
+            "{0, 1}": {
+              "OutputUUID": "3553994C-48B2-4335-985A-117D1A503114",
+              "Type": "ActionOutput",
+              "OutputName": "Chuẩn hóa xuống dòng"
+            }
+          }
+        },
+        "WFSerializationType": "WFTextTokenString"
+      },
+      "CustomOutputName": "Chuẩn hóa khoảng trắng OCR"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.text.replace",
+    "WFWorkflowActionParameters": {
+      "WFReplaceTextReplace": "",
+      "WFReplaceTextRegularExpression": true,
+      "WFReplaceTextFind": "[\\u200b-\\u200f\\u202a-\\u202e\\u2060\\ufeff]",
+      "WFReplaceTextCaseSensitive": true,
+      "UUID": "2DB7BBEA-3304-4EBA-90CA-00EC058ECB2E",
+      "WFInput": {
+        "Value": {
+          "string": "￼",
+          "attachmentsByRange": {
+            "{0, 1}": {
+              "OutputUUID": "BD32D7B2-52FC-440A-86A7-F8F5BA7E601B",
+              "Type": "ActionOutput",
+              "OutputName": "Chuẩn hóa khoảng trắng OCR"
+            }
+          }
+        },
+        "WFSerializationType": "WFTextTokenString"
+      },
+      "CustomOutputName": "Văn bản sạch"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.text.match",
+    "WFWorkflowActionParameters": {
+      "text": {
+        "Value": {
+          "string": "￼",
+          "attachmentsByRange": {
+            "{0, 1}": {
+              "OutputUUID": "2DB7BBEA-3304-4EBA-90CA-00EC058ECB2E",
+              "Type": "ActionOutput",
+              "OutputName": "Văn bản sạch"
+            }
+          }
+        },
+        "WFSerializationType": "WFTextTokenString"
+      },
+      "UUID": "EA17AED2-71DB-4413-A611-6E5EAD0A98A7",
+      "CustomOutputName": "Dòng Đơn vị",
+      "WFMatchTextCaseSensitive": true,
+      "WFMatchTextPattern": "(?im)(?:^|[ \\t])[dđ]\\p{M}*[oôơòóọỏõồốộổỗờớợởỡ]\\p{M}*n[ \\t]*v[iìíịỉĩ]\\p{M}*[ \\t]*[:：;][ \\t\\n]*([^\\r\\n]+)"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.count",
+    "WFWorkflowActionParameters": {
+      "UUID": "12A8D887-672C-458C-BEEF-EE9EBD4C44F3",
+      "CustomOutputName": "Số dòng Đơn vị tìm được — độ dài",
+      "WFCountType": "Characters",
+      "Input": {
+        "Value": {
+          "OutputUUID": "EA17AED2-71DB-4413-A611-6E5EAD0A98A7",
+          "Type": "ActionOutput",
+          "OutputName": "Dòng Đơn vị"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+    "WFWorkflowActionParameters": {
+      "WFCondition": 2,
+      "WFInput": {
+        "Type": "Variable",
+        "Variable": {
+          "Value": {
+            "Type": "ActionOutput",
+            "OutputName": "Số dòng Đơn vị tìm được — độ dài",
+            "OutputUUID": "12A8D887-672C-458C-BEEF-EE9EBD4C44F3",
+            "Aggrandizements": [
+              {
+                "Type": "WFCoercionVariableAggrandizement",
+                "CoercionItemClass": "WFNumberContentItem"
+              }
+            ]
+          },
+          "WFSerializationType": "WFTextTokenAttachment"
+        }
+      },
+      "WFControlFlowMode": 0,
+      "UUID": "90C4387A-1C0D-4761-BFBA-B89A29275CCA",
+      "GroupingIdentifier": "4723856A-F22A-4A68-B5DE-AFB04FC18995",
+      "WFNumberValue": "0"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.getitemfromlist",
+    "WFWorkflowActionParameters": {
+      "WFInput": {
+        "Value": {
+          "OutputUUID": "EA17AED2-71DB-4413-A611-6E5EAD0A98A7",
+          "Type": "ActionOutput",
+          "OutputName": "Dòng Đơn vị"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      },
+      "WFItemSpecifier": "First Item",
+      "UUID": "00CB2E54-A25B-4FDA-85D7-CD65F00C3A70",
+      "CustomOutputName": "Dòng tên khách"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.text.match.getgroup",
+    "WFWorkflowActionParameters": {
+      "WFGetGroupType": "Group At Index",
+      "matches": {
+        "Value": {
+          "OutputUUID": "00CB2E54-A25B-4FDA-85D7-CD65F00C3A70",
+          "Type": "ActionOutput",
+          "OutputName": "Dòng tên khách"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      },
+      "WFGroupIndex": 1,
+      "UUID": "300792D4-5993-4BAC-9651-266DF8BAC694",
+      "CustomOutputName": "Tên gốc"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.text.replace",
+    "WFWorkflowActionParameters": {
+      "WFReplaceTextReplace": "",
+      "WFReplaceTextRegularExpression": true,
+      "WFReplaceTextFind": "(?i)[ \\t]*(?:NV[ \t]+b[aăâàáạảãằắặẳẵầấậẩẫ]\\p{M}*n[ \\t]+h[aăâàáạảãằắặẳẵầấậẩẫ]\\p{M}*ng|[dđ]\\p{M}*[iìíịỉĩ]\\p{M}*[eêèéẹẻẽềếệểễ]\\p{M}*n[ \\t]+th[oôơòóọỏõồốộổỗờớợởỡ]\\p{M}*[aăâàáạảãằắặẳẵầấậẩẫ]\\p{M}*[iìíịỉĩ]\\p{M}*|[dđ]\\p{M}*[iìíịỉĩ]\\p{M}*[aăâàáạảãằắặẳẵầấậẩẫ]\\p{M}*[ \\t]+ch[iìíịỉĩ]\\p{M}*)[ \\t]*[:：]?.*$",
+      "WFReplaceTextCaseSensitive": true,
+      "UUID": "81DD572D-0875-428C-9531-CC999D7DFF9C",
+      "WFInput": {
+        "Value": {
+          "string": "￼",
+          "attachmentsByRange": {
+            "{0, 1}": {
+              "OutputUUID": "300792D4-5993-4BAC-9651-266DF8BAC694",
+              "Type": "ActionOutput",
+              "OutputName": "Tên gốc"
+            }
+          }
+        },
+        "WFSerializationType": "WFTextTokenString"
+      },
+      "CustomOutputName": "Bỏ cột bên cạnh"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.text.replace",
+    "WFWorkflowActionParameters": {
+      "WFReplaceTextReplace": "",
+      "WFReplaceTextRegularExpression": true,
+      "WFReplaceTextFind": "^[ \\t:：;]+|[ \\t.,;]+$",
+      "WFReplaceTextCaseSensitive": true,
+      "UUID": "0F474C88-F5EF-435E-B229-71ECA7285843",
+      "WFInput": {
+        "Value": {
+          "string": "￼",
+          "attachmentsByRange": {
+            "{0, 1}": {
+              "OutputUUID": "81DD572D-0875-428C-9531-CC999D7DFF9C",
+              "Type": "ActionOutput",
+              "OutputName": "Bỏ cột bên cạnh"
+            }
+          }
+        },
+        "WFSerializationType": "WFTextTokenString"
+      },
+      "CustomOutputName": "Tên đã gọn"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.text.replace",
+    "WFWorkflowActionParameters": {
+      "WFReplaceTextReplace": " ",
+      "WFReplaceTextRegularExpression": true,
+      "WFReplaceTextFind": "[ \\t]+",
+      "WFReplaceTextCaseSensitive": true,
+      "UUID": "4447A474-7CB8-4896-92B2-2FCC03661FCD",
+      "WFInput": {
+        "Value": {
+          "string": "￼",
+          "attachmentsByRange": {
+            "{0, 1}": {
+              "OutputUUID": "0F474C88-F5EF-435E-B229-71ECA7285843",
+              "Type": "ActionOutput",
+              "OutputName": "Tên đã gọn"
+            }
+          }
+        },
+        "WFSerializationType": "WFTextTokenString"
+      },
+      "CustomOutputName": "Khoảng cách trong tên"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.text.changecase",
+    "WFWorkflowActionParameters": {
+      "WFCaseType": "UPPERCASE",
+      "UUID": "F337AF84-2215-45ED-B544-EC016BBCA704",
+      "CustomOutputName": "Tên khách hàng",
+      "text": {
+        "Value": {
+          "OutputUUID": "4447A474-7CB8-4896-92B2-2FCC03661FCD",
+          "Type": "ActionOutput",
+          "OutputName": "Khoảng cách trong tên"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.text.match",
+    "WFWorkflowActionParameters": {
+      "text": {
+        "Value": {
+          "string": "￼",
+          "attachmentsByRange": {
+            "{0, 1}": {
+              "OutputUUID": "F337AF84-2215-45ED-B544-EC016BBCA704",
+              "Type": "ActionOutput",
+              "OutputName": "Tên khách hàng"
+            }
+          }
+        },
+        "WFSerializationType": "WFTextTokenString"
+      },
+      "UUID": "197EBB9E-9AE0-46CB-8383-596F7339F2F5",
+      "CustomOutputName": "Kiểm tra tên",
+      "WFMatchTextCaseSensitive": true,
+      "WFMatchTextPattern": "^[\\p{L}\\p{M}](?:[\\p{L}\\p{M}\\p{N} .&'’(),/\\-]*[\\p{L}\\p{M}\\p{N}])?$"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.count",
+    "WFWorkflowActionParameters": {
+      "UUID": "A01DE351-9940-4B6E-8FBF-B62BDC1370BA",
+      "CustomOutputName": "Số tên đúng cấu trúc — độ dài",
+      "WFCountType": "Characters",
+      "Input": {
+        "Value": {
+          "OutputUUID": "197EBB9E-9AE0-46CB-8383-596F7339F2F5",
+          "Type": "ActionOutput",
+          "OutputName": "Kiểm tra tên"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+    "WFWorkflowActionParameters": {
+      "WFCondition": 2,
+      "WFInput": {
+        "Type": "Variable",
+        "Variable": {
+          "Value": {
+            "Type": "ActionOutput",
+            "OutputName": "Số tên đúng cấu trúc — độ dài",
+            "OutputUUID": "A01DE351-9940-4B6E-8FBF-B62BDC1370BA",
+            "Aggrandizements": [
+              {
+                "Type": "WFCoercionVariableAggrandizement",
+                "CoercionItemClass": "WFNumberContentItem"
+              }
+            ]
+          },
+          "WFSerializationType": "WFTextTokenAttachment"
+        }
+      },
+      "WFControlFlowMode": 0,
+      "UUID": "81D3EBFF-CE1E-4B08-8AB0-DAD80BC934C1",
+      "GroupingIdentifier": "73D70A0E-5C6E-4AC7-921B-B5DF98054CE6",
+      "WFNumberValue": "0"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.text.match",
+    "WFWorkflowActionParameters": {
+      "text": {
+        "Value": {
+          "string": "￼",
+          "attachmentsByRange": {
+            "{0, 1}": {
+              "OutputUUID": "F337AF84-2215-45ED-B544-EC016BBCA704",
+              "Type": "ActionOutput",
+              "OutputName": "Tên khách hàng"
+            }
+          }
+        },
+        "WFSerializationType": "WFTextTokenString"
+      },
+      "UUID": "C1442130-EC5B-4C4D-A9AE-BDBFB4DCDF3D",
+      "CustomOutputName": "Chữ cái trong tên khách",
+      "WFMatchTextCaseSensitive": true,
+      "WFMatchTextPattern": "\\p{L}"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.count",
+    "WFWorkflowActionParameters": {
+      "UUID": "46EB1CBF-67B8-45A9-926F-6C700C26554A",
+      "CustomOutputName": "Số chữ cái trong tên khách — độ dài",
+      "WFCountType": "Characters",
+      "Input": {
+        "Value": {
+          "OutputUUID": "C1442130-EC5B-4C4D-A9AE-BDBFB4DCDF3D",
+          "Type": "ActionOutput",
+          "OutputName": "Chữ cái trong tên khách"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+    "WFWorkflowActionParameters": {
+      "WFNumberValue": "0",
+      "WFInput": {
+        "Type": "Variable",
+        "Variable": {
+          "Value": {
+            "Type": "ActionOutput",
+            "OutputName": "Số chữ cái trong tên khách — độ dài",
+            "OutputUUID": "46EB1CBF-67B8-45A9-926F-6C700C26554A",
+            "Aggrandizements": [
+              {
+                "Type": "WFCoercionVariableAggrandizement",
+                "CoercionItemClass": "WFNumberContentItem"
+              }
+            ]
+          },
+          "WFSerializationType": "WFTextTokenAttachment"
+        }
+      },
+      "WFControlFlowMode": 0,
+      "UUID": "342D281C-E26E-459D-8DEC-920C7A1435EB",
+      "GroupingIdentifier": "2AF4AEB4-DF39-4044-ADE5-B772458114A4",
+      "WFCondition": 2
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.setvariable",
+    "WFWorkflowActionParameters": {
+      "WFInput": {
+        "Value": {
+          "OutputUUID": "F337AF84-2215-45ED-B544-EC016BBCA704",
+          "Type": "ActionOutput",
+          "OutputName": "Tên khách hàng"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      },
+      "WFVariableName": "Tên khách đã chọn",
+      "UUID": "88D21E4D-CE75-4009-A80B-ED882A37F948"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.number",
+    "WFWorkflowActionParameters": {
+      "UUID": "FBDD2088-6E19-42F2-897B-18B71AFACE2B",
+      "CustomOutputName": "Đã có tên khách = 1",
+      "WFNumberActionNumber": 1
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.setvariable",
+    "WFWorkflowActionParameters": {
+      "WFInput": {
+        "Value": {
+          "OutputUUID": "FBDD2088-6E19-42F2-897B-18B71AFACE2B",
+          "Type": "ActionOutput",
+          "OutputName": "Đã có tên khách = 1"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      },
+      "WFVariableName": "Đã có tên khách",
+      "UUID": "1E071F5F-226D-442F-8395-2DFD3DBC93DA"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+    "WFWorkflowActionParameters": {
+      "UUID": "00E1A920-3A64-488B-8359-0955DEB6B7CE",
+      "GroupingIdentifier": "2AF4AEB4-DF39-4044-ADE5-B772458114A4",
+      "WFControlFlowMode": 2
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+    "WFWorkflowActionParameters": {
+      "UUID": "ACCAFBBC-9360-42B3-9075-D6DD69436D95",
+      "GroupingIdentifier": "73D70A0E-5C6E-4AC7-921B-B5DF98054CE6",
+      "WFControlFlowMode": 2
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+    "WFWorkflowActionParameters": {
+      "UUID": "BD89E9C2-F6E4-426B-A98A-D5EBE9B350A5",
+      "GroupingIdentifier": "4723856A-F22A-4A68-B5DE-AFB04FC18995",
+      "WFControlFlowMode": 2
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.text.match",
+    "WFWorkflowActionParameters": {
+      "text": {
+        "Value": {
+          "string": "￼",
+          "attachmentsByRange": {
+            "{0, 1}": {
+              "OutputUUID": "2DB7BBEA-3304-4EBA-90CA-00EC058ECB2E",
+              "Type": "ActionOutput",
+              "OutputName": "Văn bản sạch"
+            }
+          }
+        },
+        "WFSerializationType": "WFTextTokenString"
+      },
+      "UUID": "999261B2-CE29-4743-8AC4-6F53B510DA5D",
+      "CustomOutputName": "Phần tổng tiền đến cuối hóa đơn",
+      "WFMatchTextCaseSensitive": true,
+      "WFMatchTextPattern": "(?im)(?:^|[ \\t])(?:t[oôơòóọỏõồốộổỗờớợởỡ]\\p{M}*ng[ \\t]+t[iìíịỉĩ]\\p{M}*[eêèéẹẻẽềếệểễ]\\p{M}*n[ \\t]+th[aăâàáạảãằắặẳẵầấậẩẫ]\\p{M}*nh[ \\t]+t[oôơòóọỏõồốộổỗờớợởỡ]\\p{M}*[aăâàáạảãằắặẳẵầấậẩẫ]\\p{M}*n|t[oôơòóọỏõồốộổỗờớợởỡ]\\p{M}*ng[ \\t]+th[aăâàáạảãằắặẳẵầấậẩẫ]\\p{M}*nh[ \\t]+t[oôơòóọỏõồốộổỗờớợởỡ]\\p{M}*[aăâàáạảãằắặẳẵầấậẩẫ]\\p{M}*n|t[oôơòóọỏõồốộổỗờớợởỡ]\\p{M}*ng[ \\t]+t[iìíịỉĩ]\\p{M}*[eêèéẹẻẽềếệểễ]\\p{M}*n[ \\t]+h[aăâàáạảãằắặẳẵầấậẩẫ]\\p{M}*ng|t[oôơòóọỏõồốộổỗờớợởỡ]\\p{M}*ng[ \\t]+c[oôơòóọỏõồốộổỗờớợởỡ]\\p{M}*ng|t[oôơòóọỏõồốộổỗờớợởỡ]\\p{M}*ng[ \\t]+s[oôơòóọỏõồốộổỗờớợởỡ]\\p{M}*[ \\t]+t[iìíịỉĩ]\\p{M}*[eêèéẹẻẽềếệểễ]\\p{M}*n|t[oôơòóọỏõồốộổỗờớợởỡ]\\p{M}*ng[ \\t]+t[iìíịỉĩ]\\p{M}*[eêèéẹẻẽềếệểễ]\\p{M}*n|t[iìíịỉĩ]\\p{M}*[eêèéẹẻẽềếệểễ]\\p{M}*n[ \\t]+h[aăâàáạảãằắặẳẵầấậẩẫ]\\p{M}*ng|th[aăâàáạảãằắặẳẵầấậẩẫ]\\p{M}*nh[ \\t]+t[oôơòóọỏõồốộổỗờớợởỡ]\\p{M}*[aăâàáạảãằắặẳẵầấậẩẫ]\\p{M}*n)(?![\\p{L}\\p{M}])[\\s\\S]*"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.count",
+    "WFWorkflowActionParameters": {
+      "UUID": "3BB3670B-4070-412A-897D-2BC8DE98F013",
+      "CustomOutputName": "Số vùng tổng tiền tìm được — độ dài",
+      "WFCountType": "Characters",
+      "Input": {
+        "Value": {
+          "OutputUUID": "999261B2-CE29-4743-8AC4-6F53B510DA5D",
+          "Type": "ActionOutput",
+          "OutputName": "Phần tổng tiền đến cuối hóa đơn"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+    "WFWorkflowActionParameters": {
+      "WFCondition": 2,
+      "WFInput": {
+        "Type": "Variable",
+        "Variable": {
+          "Value": {
+            "Type": "ActionOutput",
+            "OutputName": "Số vùng tổng tiền tìm được — độ dài",
+            "OutputUUID": "3BB3670B-4070-412A-897D-2BC8DE98F013",
+            "Aggrandizements": [
+              {
+                "Type": "WFCoercionVariableAggrandizement",
+                "CoercionItemClass": "WFNumberContentItem"
+              }
+            ]
+          },
+          "WFSerializationType": "WFTextTokenAttachment"
+        }
+      },
+      "WFControlFlowMode": 0,
+      "UUID": "DAEC6223-C685-409D-BDF6-665F7239A6B3",
+      "GroupingIdentifier": "E9B803D4-B3BE-4E58-B4D3-61264B923E39",
+      "WFNumberValue": "0"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.text.match",
+    "WFWorkflowActionParameters": {
+      "text": {
+        "Value": {
+          "string": "￼",
+          "attachmentsByRange": {
+            "{0, 1}": {
+              "OutputUUID": "999261B2-CE29-4743-8AC4-6F53B510DA5D",
+              "Type": "ActionOutput",
+              "OutputName": "Phần tổng tiền đến cuối hóa đơn"
+            }
+          }
+        },
+        "WFSerializationType": "WFTextTokenString"
+      },
+      "UUID": "23F7CA10-AACE-424F-9C06-28C52812406B",
+      "CustomOutputName": "Các khoản tiền trong phần cuối",
+      "WFMatchTextCaseSensitive": true,
+      "WFMatchTextPattern": "(?m)(?<![0-9.,])(?<![-−][ \\t]{0,16})([0-9]{1,3}(?:[ \\t]*[.,][ \\t]*[0-9]{3})+|[0-9]{1,3}(?:[ \\t]+[0-9]{3})+)(?:[.,][0-9]{2})?(?![0-9]|[.,][ \\t]*[0-9])"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.count",
+    "WFWorkflowActionParameters": {
+      "UUID": "A0BE75B9-2135-400A-959F-0D0440900338",
+      "CustomOutputName": "Số khoản tiền tìm được — độ dài",
+      "WFCountType": "Characters",
+      "Input": {
+        "Value": {
+          "OutputUUID": "23F7CA10-AACE-424F-9C06-28C52812406B",
+          "Type": "ActionOutput",
+          "OutputName": "Các khoản tiền trong phần cuối"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+    "WFWorkflowActionParameters": {
+      "WFCondition": 2,
+      "WFInput": {
+        "Type": "Variable",
+        "Variable": {
+          "Value": {
+            "Type": "ActionOutput",
+            "OutputName": "Số khoản tiền tìm được — độ dài",
+            "OutputUUID": "A0BE75B9-2135-400A-959F-0D0440900338",
+            "Aggrandizements": [
+              {
+                "Type": "WFCoercionVariableAggrandizement",
+                "CoercionItemClass": "WFNumberContentItem"
+              }
+            ]
+          },
+          "WFSerializationType": "WFTextTokenAttachment"
+        }
+      },
+      "WFControlFlowMode": 0,
+      "UUID": "8E06D332-6E23-45B8-ACF1-361121FA853A",
+      "GroupingIdentifier": "0E38A1A7-BC9B-407B-9CD7-A0B0A1785BF1",
+      "WFNumberValue": "0"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.getitemfromlist",
+    "WFWorkflowActionParameters": {
+      "WFInput": {
+        "Value": {
+          "OutputUUID": "23F7CA10-AACE-424F-9C06-28C52812406B",
+          "Type": "ActionOutput",
+          "OutputName": "Các khoản tiền trong phần cuối"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      },
+      "WFItemSpecifier": "Last Item",
+      "UUID": "353F8015-2400-4C10-8007-EB6C0A2F7FF6",
+      "CustomOutputName": "Khoản tiền cuối cùng"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.text.match.getgroup",
+    "WFWorkflowActionParameters": {
+      "WFGetGroupType": "Group At Index",
+      "matches": {
+        "Value": {
+          "OutputUUID": "353F8015-2400-4C10-8007-EB6C0A2F7FF6",
+          "Type": "ActionOutput",
+          "OutputName": "Khoản tiền cuối cùng"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      },
+      "WFGroupIndex": 1,
+      "UUID": "A29AFE75-F3F6-42E6-A95C-3409422D945F",
+      "CustomOutputName": "Khoản tiền cuối cùng — giá trị"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.text.replace",
+    "WFWorkflowActionParameters": {
+      "WFReplaceTextReplace": "",
+      "WFReplaceTextRegularExpression": true,
+      "WFReplaceTextFind": "[^0-9]",
+      "WFReplaceTextCaseSensitive": true,
+      "UUID": "AF59EC85-00A2-4B87-8EBC-E4E8DF1B70B4",
+      "WFInput": {
+        "Value": {
+          "string": "￼",
+          "attachmentsByRange": {
+            "{0, 1}": {
+              "OutputUUID": "A29AFE75-F3F6-42E6-A95C-3409422D945F",
+              "Type": "ActionOutput",
+              "OutputName": "Khoản tiền cuối cùng — giá trị"
+            }
+          }
+        },
+        "WFSerializationType": "WFTextTokenString"
+      },
+      "CustomOutputName": "Chuẩn hóa số tiền đã nhận"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.text.match",
+    "WFWorkflowActionParameters": {
+      "text": {
+        "Value": {
+          "string": "￼",
+          "attachmentsByRange": {
+            "{0, 1}": {
+              "OutputUUID": "AF59EC85-00A2-4B87-8EBC-E4E8DF1B70B4",
+              "Type": "ActionOutput",
+              "OutputName": "Chuẩn hóa số tiền đã nhận"
+            }
+          }
+        },
+        "WFSerializationType": "WFTextTokenString"
+      },
+      "UUID": "84FEC4E5-52FB-4B9C-8470-AF1ECE0AF912",
+      "CustomOutputName": "Kiểm tra chữ số tiền",
+      "WFMatchTextCaseSensitive": true,
+      "WFMatchTextPattern": "^[0-9]+$"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.count",
+    "WFWorkflowActionParameters": {
+      "UUID": "AE07028F-D663-4E39-920E-9D1B6CC657AA",
+      "CustomOutputName": "Số giá trị tiền hợp lệ — độ dài",
+      "WFCountType": "Characters",
+      "Input": {
+        "Value": {
+          "OutputUUID": "84FEC4E5-52FB-4B9C-8470-AF1ECE0AF912",
+          "Type": "ActionOutput",
+          "OutputName": "Kiểm tra chữ số tiền"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+    "WFWorkflowActionParameters": {
+      "WFCondition": 2,
+      "WFInput": {
+        "Type": "Variable",
+        "Variable": {
+          "Value": {
+            "Type": "ActionOutput",
+            "OutputName": "Số giá trị tiền hợp lệ — độ dài",
+            "OutputUUID": "AE07028F-D663-4E39-920E-9D1B6CC657AA",
+            "Aggrandizements": [
+              {
+                "Type": "WFCoercionVariableAggrandizement",
+                "CoercionItemClass": "WFNumberContentItem"
+              }
+            ]
+          },
+          "WFSerializationType": "WFTextTokenAttachment"
+        }
+      },
+      "WFControlFlowMode": 0,
+      "UUID": "43B94191-A689-46BE-9897-50E6BCE5C851",
+      "GroupingIdentifier": "7D0620D5-AC81-4766-8A51-C9B18AA1C707",
+      "WFNumberValue": "0"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.setvariable",
+    "WFWorkflowActionParameters": {
+      "WFInput": {
+        "Value": {
+          "OutputUUID": "AF59EC85-00A2-4B87-8EBC-E4E8DF1B70B4",
+          "Type": "ActionOutput",
+          "OutputName": "Chuẩn hóa số tiền đã nhận"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      },
+      "WFVariableName": "Tiền tổng đã chọn",
+      "UUID": "7B42619A-2006-4FAE-B654-6804E6A9A0AB"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.number",
+    "WFWorkflowActionParameters": {
+      "UUID": "CE319C18-804F-4D8A-B829-3B67D1D77651",
+      "CustomOutputName": "Đã có tiền tổng = 1",
+      "WFNumberActionNumber": 1
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.setvariable",
+    "WFWorkflowActionParameters": {
+      "WFInput": {
+        "Value": {
+          "OutputUUID": "CE319C18-804F-4D8A-B829-3B67D1D77651",
+          "Type": "ActionOutput",
+          "OutputName": "Đã có tiền tổng = 1"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      },
+      "WFVariableName": "Đã có tiền tổng",
+      "UUID": "D4703B8D-9476-4BC2-A380-1B9C7C64F4A4"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+    "WFWorkflowActionParameters": {
+      "UUID": "442E0FF6-7A3C-40A9-8B1F-67DE0DCD32C6",
+      "GroupingIdentifier": "7D0620D5-AC81-4766-8A51-C9B18AA1C707",
+      "WFControlFlowMode": 2
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+    "WFWorkflowActionParameters": {
+      "UUID": "BA7032DC-91A7-40A9-A1F7-D9F28831E1F1",
+      "GroupingIdentifier": "0E38A1A7-BC9B-407B-9CD7-A0B0A1785BF1",
+      "WFControlFlowMode": 1
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.text.match",
+    "WFWorkflowActionParameters": {
+      "text": {
+        "Value": {
+          "string": "￼",
+          "attachmentsByRange": {
+            "{0, 1}": {
+              "OutputUUID": "2DB7BBEA-3304-4EBA-90CA-00EC058ECB2E",
+              "Type": "ActionOutput",
+              "OutputName": "Văn bản sạch"
+            }
+          }
+        },
+        "WFSerializationType": "WFTextTokenString"
+      },
+      "UUID": "C5559942-AC7A-48EA-B435-BBEF9E56C2CE",
+      "CustomOutputName": "Tiền không có dấu phân cách",
+      "WFMatchTextCaseSensitive": true,
+      "WFMatchTextPattern": "(?im)(?:^|[ \\t])(?:t[oôơòóọỏõồốộổỗờớợởỡ]\\p{M}*ng[ \\t]+t[iìíịỉĩ]\\p{M}*[eêèéẹẻẽềếệểễ]\\p{M}*n[ \\t]+th[aăâàáạảãằắặẳẵầấậẩẫ]\\p{M}*nh[ \\t]+t[oôơòóọỏõồốộổỗờớợởỡ]\\p{M}*[aăâàáạảãằắặẳẵầấậẩẫ]\\p{M}*n|t[oôơòóọỏõồốộổỗờớợởỡ]\\p{M}*ng[ \\t]+th[aăâàáạảãằắặẳẵầấậẩẫ]\\p{M}*nh[ \\t]+t[oôơòóọỏõồốộổỗờớợởỡ]\\p{M}*[aăâàáạảãằắặẳẵầấậẩẫ]\\p{M}*n|t[oôơòóọỏõồốộổỗờớợởỡ]\\p{M}*ng[ \\t]+t[iìíịỉĩ]\\p{M}*[eêèéẹẻẽềếệểễ]\\p{M}*n[ \\t]+h[aăâàáạảãằắặẳẵầấậẩẫ]\\p{M}*ng|t[oôơòóọỏõồốộổỗờớợởỡ]\\p{M}*ng[ \\t]+c[oôơòóọỏõồốộổỗờớợởỡ]\\p{M}*ng|t[oôơòóọỏõồốộổỗờớợởỡ]\\p{M}*ng[ \\t]+s[oôơòóọỏõồốộổỗờớợởỡ]\\p{M}*[ \\t]+t[iìíịỉĩ]\\p{M}*[eêèéẹẻẽềếệểễ]\\p{M}*n|t[oôơòóọỏõồốộổỗờớợởỡ]\\p{M}*ng[ \\t]+t[iìíịỉĩ]\\p{M}*[eêèéẹẻẽềếệểễ]\\p{M}*n|t[iìíịỉĩ]\\p{M}*[eêèéẹẻẽềếệểễ]\\p{M}*n[ \\t]+h[aăâàáạảãằắặẳẵầấậẩẫ]\\p{M}*ng|th[aăâàáạảãằắặẳẵầấậẩẫ]\\p{M}*nh[ \\t]+t[oôơòóọỏõồốộổỗờớợởỡ]\\p{M}*[aăâàáạảãằắặẳẵầấậẩẫ]\\p{M}*n)[ \\t\\n:：=.]*(?:VND|VNĐ|[₫đ])?[ \\t]*((?:[0-9]{1,3}(?:[ \\t]*[.,][ \\t]*[0-9]{3})+|[0-9]{1,3}(?:[ \\t]+[0-9]{3})+|[0-9]+))(?:[.,][0-9]{2})?(?![0-9]|[.,][ \\t]*[0-9])"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.count",
+    "WFWorkflowActionParameters": {
+      "UUID": "E63D3DCD-C2C0-414F-86CB-7400A73C6DA6",
+      "CustomOutputName": "Số dòng tiền không phân cách — độ dài",
+      "WFCountType": "Characters",
+      "Input": {
+        "Value": {
+          "OutputUUID": "C5559942-AC7A-48EA-B435-BBEF9E56C2CE",
+          "Type": "ActionOutput",
+          "OutputName": "Tiền không có dấu phân cách"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+    "WFWorkflowActionParameters": {
+      "WFCondition": 2,
+      "WFInput": {
+        "Type": "Variable",
+        "Variable": {
+          "Value": {
+            "Type": "ActionOutput",
+            "OutputName": "Số dòng tiền không phân cách — độ dài",
+            "OutputUUID": "E63D3DCD-C2C0-414F-86CB-7400A73C6DA6",
+            "Aggrandizements": [
+              {
+                "Type": "WFCoercionVariableAggrandizement",
+                "CoercionItemClass": "WFNumberContentItem"
+              }
+            ]
+          },
+          "WFSerializationType": "WFTextTokenAttachment"
+        }
+      },
+      "WFControlFlowMode": 0,
+      "UUID": "77453A23-1205-4CA5-A4AC-F6D7326613B2",
+      "GroupingIdentifier": "DA011218-D36C-4DAD-8776-E9BDB6DF3594",
+      "WFNumberValue": "0"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.getitemfromlist",
+    "WFWorkflowActionParameters": {
+      "WFInput": {
+        "Value": {
+          "OutputUUID": "C5559942-AC7A-48EA-B435-BBEF9E56C2CE",
+          "Type": "ActionOutput",
+          "OutputName": "Tiền không có dấu phân cách"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      },
+      "WFItemSpecifier": "Last Item",
+      "UUID": "3B717498-A1A6-46AC-A40F-706EF4DF789D",
+      "CustomOutputName": "Dòng tiền không phân cách"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.text.match.getgroup",
+    "WFWorkflowActionParameters": {
+      "WFGetGroupType": "Group At Index",
+      "matches": {
+        "Value": {
+          "OutputUUID": "3B717498-A1A6-46AC-A40F-706EF4DF789D",
+          "Type": "ActionOutput",
+          "OutputName": "Dòng tiền không phân cách"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      },
+      "WFGroupIndex": 1,
+      "UUID": "39DE8C44-D78B-4CA4-8471-BCDC89B8F72B",
+      "CustomOutputName": "Dòng tiền không phân cách — giá trị"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.text.replace",
+    "WFWorkflowActionParameters": {
+      "WFReplaceTextReplace": "",
+      "WFReplaceTextRegularExpression": true,
+      "WFReplaceTextFind": "[^0-9]",
+      "WFReplaceTextCaseSensitive": true,
+      "UUID": "04FA3994-5D15-4647-9E77-89A86D3E1FDB",
+      "WFInput": {
+        "Value": {
+          "string": "￼",
+          "attachmentsByRange": {
+            "{0, 1}": {
+              "OutputUUID": "39DE8C44-D78B-4CA4-8471-BCDC89B8F72B",
+              "Type": "ActionOutput",
+              "OutputName": "Dòng tiền không phân cách — giá trị"
+            }
+          }
+        },
+        "WFSerializationType": "WFTextTokenString"
+      },
+      "CustomOutputName": "Chuẩn hóa số tiền đã nhận"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.text.match",
+    "WFWorkflowActionParameters": {
+      "text": {
+        "Value": {
+          "string": "￼",
+          "attachmentsByRange": {
+            "{0, 1}": {
+              "OutputUUID": "04FA3994-5D15-4647-9E77-89A86D3E1FDB",
+              "Type": "ActionOutput",
+              "OutputName": "Chuẩn hóa số tiền đã nhận"
+            }
+          }
+        },
+        "WFSerializationType": "WFTextTokenString"
+      },
+      "UUID": "BF498231-2B05-4FE7-AFCB-3F157EBF823F",
+      "CustomOutputName": "Kiểm tra chữ số tiền",
+      "WFMatchTextCaseSensitive": true,
+      "WFMatchTextPattern": "^[0-9]+$"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.count",
+    "WFWorkflowActionParameters": {
+      "UUID": "6E8E8C5C-8137-438D-A1D9-710F47A6FB37",
+      "CustomOutputName": "Số giá trị tiền hợp lệ — độ dài",
+      "WFCountType": "Characters",
+      "Input": {
+        "Value": {
+          "OutputUUID": "BF498231-2B05-4FE7-AFCB-3F157EBF823F",
+          "Type": "ActionOutput",
+          "OutputName": "Kiểm tra chữ số tiền"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      }
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+    "WFWorkflowActionParameters": {
+      "WFCondition": 2,
+      "WFInput": {
+        "Type": "Variable",
+        "Variable": {
+          "Value": {
+            "Type": "ActionOutput",
+            "OutputName": "Số giá trị tiền hợp lệ — độ dài",
+            "OutputUUID": "6E8E8C5C-8137-438D-A1D9-710F47A6FB37",
+            "Aggrandizements": [
+              {
+                "Type": "WFCoercionVariableAggrandizement",
+                "CoercionItemClass": "WFNumberContentItem"
+              }
+            ]
+          },
+          "WFSerializationType": "WFTextTokenAttachment"
+        }
+      },
+      "WFControlFlowMode": 0,
+      "UUID": "43A48A03-FA75-457A-BE20-DD1DC85A634E",
+      "GroupingIdentifier": "A59A4570-F9F3-4D84-888F-2048C32F966C",
+      "WFNumberValue": "0"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.setvariable",
+    "WFWorkflowActionParameters": {
+      "WFInput": {
+        "Value": {
+          "OutputUUID": "04FA3994-5D15-4647-9E77-89A86D3E1FDB",
+          "Type": "ActionOutput",
+          "OutputName": "Chuẩn hóa số tiền đã nhận"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      },
+      "WFVariableName": "Tiền tổng đã chọn",
+      "UUID": "012BF707-D9A8-4BEA-8035-64AA515BB178"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.number",
+    "WFWorkflowActionParameters": {
+      "UUID": "BE8CC60D-5306-4A2A-B644-5859C07133A2",
+      "CustomOutputName": "Đã có tiền tổng = 1",
+      "WFNumberActionNumber": 1
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.setvariable",
+    "WFWorkflowActionParameters": {
+      "WFInput": {
+        "Value": {
+          "OutputUUID": "BE8CC60D-5306-4A2A-B644-5859C07133A2",
+          "Type": "ActionOutput",
+          "OutputName": "Đã có tiền tổng = 1"
+        },
+        "WFSerializationType": "WFTextTokenAttachment"
+      },
+      "WFVariableName": "Đã có tiền tổng",
+      "UUID": "D4B1C9AA-8BD0-432F-8D41-AE7CD83B525B"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+    "WFWorkflowActionParameters": {
+      "WFControlFlowMode": 2,
+      "GroupingIdentifier": "A59A4570-F9F3-4D84-888F-2048C32F966C",
+      "UUID": "0957F03C-0188-4C50-96BA-5C160D19D9ED"
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+    "WFWorkflowActionParameters": {
+      "UUID": "94DF8827-1BF4-402A-B9CB-FF1D3C34A802",
+      "GroupingIdentifier": "DA011218-D36C-4DAD-8776-E9BDB6DF3594",
+      "WFControlFlowMode": 2
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+    "WFWorkflowActionParameters": {
+      "UUID": "29D51370-F24F-4343-8B49-6CEA63FCF5CD",
+      "GroupingIdentifier": "0E38A1A7-BC9B-407B-9CD7-A0B0A1785BF1",
+      "WFControlFlowMode": 2
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+    "WFWorkflowActionParameters": {
+      "UUID": "C19718C9-6320-4D12-855A-1F33A6BB29F7",
+      "GroupingIdentifier": "E9B803D4-B3BE-4E58-B4D3-61264B923E39",
+      "WFControlFlowMode": 2
+    }
+  },
+  {
+    "WFWorkflowActionIdentifier": "is.workflow.actions.conditional",
+    "WFWorkflowActionParameters": {
+      "UUID": "E5C0D90D-A8E1-4139-9342-564F18F058B4",
+      "GroupingIdentifier": "7F388BAB-A53D-46AA-B019-7B3732BA777E",
+      "WFControlFlowMode": 2
+    }
+  }
+]

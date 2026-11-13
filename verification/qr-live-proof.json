@@ -1,0 +1,16 @@
+{
+  "source": "Official VietQR QuickLink, public example account only",
+  "nativeWorkflowBase64KeepsFullSVG": true,
+  "imageToTextCoercionAvoided": true,
+  "fullSVGRasterized": true,
+  "qrDecoded": true,
+  "beneficiaryBIN": "970415",
+  "account": "113366668888",
+  "amount": "1500000",
+  "currency": "704",
+  "memo": "THANH TOAN HD3856",
+  "crc16Verified": true,
+  "iOSShortcutExecutionTested": false,
+  "firstSetupBaseQRVerified": true,
+  "baseHasNoAmount": true
+}

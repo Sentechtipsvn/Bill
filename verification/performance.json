@@ -1,0 +1,10 @@
+{
+  "datasetOrders": 150,
+  "kind": "native graph simulation; not iPhone timing",
+  "oldExecutedActions": 9926,
+  "newExecutedActions": 7446,
+  "reductionPercent": 25.0,
+  "warmFolderEnumerations": 0,
+  "warmNetworkRequests": 0,
+  "photoReads": 0
+}
