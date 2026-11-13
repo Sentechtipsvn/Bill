@@ -106,7 +106,7 @@ def fetch_qr(b,url,output):
     return ref(output)
 
 def build():
-    b=Builder()
+    b=Builder(text_json_inputs=True, typed_number_defaults=True)
     b.add('comment',WFCommentActionText=f'Phiếu Giao Hàng {VERSION} · © Sentechtipsvn')
     for var,path in [('ReportsFolder','Báo cáo'),('MonthlyFolder','Số lượng đơn hàng'),('QRFolder','QR')]:
         b.set(var,b.add('file.createfolder',WFFolder=ref('AppFolder'),WFFilePath=path))

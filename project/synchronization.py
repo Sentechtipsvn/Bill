@@ -12,7 +12,20 @@ def sync41(b):
    b.put(ref('Ledger'),'_sourceMigrated','','Ledger')
    b.put(ref('Ledger'),'_sharedDataHash','','Ledger')
    b.put(ref('Ledger'),'_iterationFixV412','1','Ledger');b.set('Dirty','1')
+  with b.if_(b.get(ref('Ledger'),'_jsonTextV413'),'empty'):
+   # A cached file hash is not proof that its orders were actually imported.
+   b.put(ref('Ledger'),'_sourceMigrated','','Ledger')
+   b.put(ref('Ledger'),'_sharedDataHash','','Ledger')
+   b.put(ref('Ledger'),'_jsonTextV413','1','Ledger');b.set('Dirty','1')
   with b.if_(ref('DataDiskHash'),'eq','missing'):b.set('DataDirty','1')
+  b.set('IndexNeedsRepair','0')
+  with b.each(b.keys(ref('OrdersData')),'IndexDataID'):
+   indexed=b.get(ref('SourceMap'),ref('IndexDataID'))
+   with b.if_(indexed,'empty'):b.set('IndexNeedsRepair','1')
+   with b.if_(indexed):
+    with b.if_(b.get(ref('Ledger'),indexed),'empty'):b.set('IndexNeedsRepair','1')
+  with b.if_(ref('IndexNeedsRepair'),'eq','1'):
+   b.put(ref('Ledger'),'_sourceMigrated','','Ledger')
   with b.if_(b.get(ref('Ledger'),'_sourceMigrated'),'empty'):
    with b.each(b.keys(ref('Ledger')),'ExistingFinanceID'):
     with b.if_(b.match(ref('ExistingFinanceID'),SHA)):
@@ -39,11 +52,22 @@ def sync41(b):
        put_object(b,ref('OrdersData'),ref('AssignedID'),ref('MigratedData'),'OrdersData');b.set('DataDirty','1')
       b.put(ref('OldFinance'),'dataID',ref('AssignedID'),'OldFinance')
       put_link(b,ref('AssignedID'),ref('ExistingFinanceID'));b.set('Dirty','1')
+     existing_data_id=field('OldFinance','dataID')
+     with b.if_(b.match(existing_data_id,CODE)):
+      existing_link=get_link(b,existing_data_id);b.set('RepairOwnLink','0')
+      with b.if_(existing_link,'empty'):b.set('RepairOwnLink','1')
+      with b.if_(existing_link):
+       with b.if_(b.get(ref('Ledger'),existing_link),'empty'):b.set('RepairOwnLink','1')
+      with b.if_(ref('RepairOwnLink'),'eq','1'):
+       put_link(b,existing_data_id,ref('ExistingFinanceID'));b.set('Dirty','1')
      b.put(ref('Ledger'),ref('ExistingFinanceID'),b.text(ref('OldFinance')),'Ledger')
    b.put(ref('Ledger'),'_sourceMigrated','1','Ledger');b.set('Dirty','1')
   b.set('DataChanged','0')
   with b.if_(b.get(ref('Ledger'),'_sharedDataHash'),'ne',ref('DataDiskHash')):b.set('DataChanged','1')
   with b.if_(ref('DataDirty'),'eq','1'):b.set('DataChanged','1')
+  # Check the import index even when the file hash is unchanged. A previous
+  # incomplete import must never make a real order disappear indefinitely.
+  with b.if_(ref('IndexNeedsRepair'),'eq','1'):b.set('DataChanged','1')
   with b.if_(ref('DataChanged'),'eq','1'):
    with b.each(b.keys(ref('OrdersData')),'DataID'):
     with b.if_(b.match(ref('DataID'),CODE),'empty'):b.alert('ID chưa hợp lệ','Dữ liệu cũ được giữ nguyên.');b.stop()
@@ -61,7 +85,7 @@ def sync41(b):
       'name':field('DataRecord','Name'),'total':field('DataRecord','Money'),'invoiceCode':ref('DataID'),'address':field('DataRecord','DC'),'phone':field('DataRecord','Number'),
       'createdAt':ref('NowISO'),'createdMonth':ref('CurrentMonth')}
      b.dictionary(values,'ImportedFinance');b.put(ref('Ledger'),ref('DataFinanceID'),b.text(ref('ImportedFinance')),'Ledger')
-     put_link(b,ref('DataID'),ref('DataFinanceID'));b.set('Dirty','1')
+     b.set('Dirty','1')
     with b.if_(old):
      b.parse(old,'ExistingFinance');b.set('HeaderChanged','0')
      with b.if_(b.math(field('ExistingFinance','cash'),'+',field('ExistingFinance','bank')),'gt',field('DataRecord','Money')):
@@ -72,5 +96,7 @@ def sync41(b):
      with b.if_(ref('HeaderChanged'),'eq','1'):
       for internal,external in pairs:b.put(ref('ExistingFinance'),internal,field('DataRecord',external),'ExistingFinance')
       b.put(ref('Ledger'),ref('DataFinanceID'),b.text(ref('ExistingFinance')),'Ledger');b.set('Dirty','1')
+    with b.if_(b.get(ref('SourceMap'),ref('DataID')),'ne',ref('DataFinanceID')):
+     put_link(b,ref('DataID'),ref('DataFinanceID'));b.set('Dirty','1')
   with b.if_(ref('Dirty'),'eq','1'):b.set('SaveReturn','main');b.go('save')
   with b.if_(ref('Dirty'),'eq','0'):b.go('main')

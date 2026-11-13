@@ -15,7 +15,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 BUILD = ROOT / "build"
-VERSION = "4.1.2"
+VERSION = "4.1.3"
 NS = uuid.UUID("2714394b-4b0c-4b8c-953d-2578ced9d54a")
 
 
@@ -59,12 +59,14 @@ def dyn(value):
 
 
 class Builder:
-    def __init__(self):
+    def __init__(self, *, text_json_inputs=False, typed_number_defaults=False):
         self.actions = []
         self.blocks = []
         self.sections = {}
         self.loop_depth = 0
         self.each_indices = []
+        self.text_json_inputs = text_json_inputs
+        self.typed_number_defaults = typed_number_defaults
         self.variable_types = {}
         self.output_types = {}
 
@@ -163,7 +165,10 @@ class Builder:
         return self.set(var, r) if var else r
 
     def parse(self, text, var=None):
-        r = self.add("detect.dictionary", WFInput=text)
+        # Match the on-device diagnostic: materialize JSON text explicitly.
+        # Do not leave File/dictionary conversion to the provider's item type.
+        value = self.text(text) if self.text_json_inputs else text
+        r = self.add("detect.dictionary", WFInput=value)
         return self.set(var, r) if var else r
 
     def math(self, *parts, var=None):
@@ -244,9 +249,14 @@ class Builder:
         self.add("exit")
 
     def ask(self, prompt, default="", kind="Text", var=None):
-        r = self.add("ask", WFAskActionPrompt=dyn(prompt), WFInputType=kind,
-                     WFAskActionDefaultAnswer=dyn(default), WFAllowsMultilineText=False,
-                     WFAskActionAllowsNegativeNumbers=False, WFAskActionAllowsDecimalNumbers=False)
+        params = dict(WFAskActionPrompt=dyn(prompt), WFInputType=kind,
+                      WFAllowsMultilineText=False, WFAskActionAllowsNegativeNumbers=False,
+                      WFAskActionAllowsDecimalNumbers=False)
+        if kind == "Number" and self.typed_number_defaults:
+            params["WFAskActionDefaultAnswerNumber"] = default
+        else:
+            params["WFAskActionDefaultAnswer"] = dyn(default)
+        r = self.add("ask", **params)
         return self.set(var, r) if var else r
 
     def choose(self, values, prompt, multi=False, var=None):

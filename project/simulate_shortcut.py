@@ -428,12 +428,13 @@ class Simulator:
         if ident == 'choosefromlist':
             return self.pick(text(get('WFChooseFromListActionPrompt', '')), flatten(get('WFInput')))
         if ident == 'ask':
-            self.asks.append((text(get('WFAskActionPrompt')),get('WFAskActionDefaultAnswer'),get('WFInputType')))
+            default = get('WFAskActionDefaultAnswerNumber', get('WFAskActionDefaultAnswer')) if get('WFInputType') == 'Number' else get('WFAskActionDefaultAnswer')
+            self.asks.append((text(get('WFAskActionPrompt')),default,get('WFInputType')))
             self.last_ui = (text(get('WFAskActionPrompt')), [])
             if not self.answers:
                 raise Pause()
             value = self.answers.pop(0)
-            if value=='__DEFAULT__':value=get('WFAskActionDefaultAnswer')
+            if value=='__DEFAULT__':value=default
             if value is None:
                 raise Stop()
             return value
